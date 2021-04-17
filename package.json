@@ -1,0 +1,21 @@
+{
+  "name": "declarative-shadow-dom",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build:client": "webpack --config webpack.config.js",
+    "build:server": "tsc --project tsconfig.server.json",
+    "start": "ts-node ./server/index.ts --project tsconfig.server.json"
+  },
+  "devDependencies": {
+    "ts-loader": "^8.1.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4",
+    "webpack": "^5.33.2",
+    "webpack-cli": "^4.6.0"
+  },
+  "dependencies": {
+    "fastify": "^3.14.2"
+  }
+}
