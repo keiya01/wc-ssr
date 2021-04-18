@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const ClientPagesPath = './client/pages';
 
@@ -50,4 +51,7 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
   },
+  plugins: [
+    new CleanWebpackPlugin(),
+  ]
 };

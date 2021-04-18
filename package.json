@@ -6,9 +6,12 @@
   "scripts": {
     "build:client": "webpack --config webpack.config.js",
     "build:server": "tsc --project tsconfig.server.json",
-    "start": "ts-node ./server/index.ts --project tsconfig.server.json"
+    "start:server": "ts-node ./server/index.ts --project tsconfig.server.json",
+    "dev": "run-s build:client start:server"
   },
   "devDependencies": {
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "npm-run-all": "^4.1.5",
     "ts-loader": "^8.1.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
