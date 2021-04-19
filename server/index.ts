@@ -12,7 +12,7 @@ import { html } from './html';
 type App = FastifyInstance<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>;
 
 const getScripts = (pathname: string) => {
-  return `/dist${pathname}.bundle.js`
+  return `/dist/client${pathname}.bundle.js`
 }
 
 const route = (app: App) => {

@@ -1,3 +1,4 @@
+import './element';
 import { AttrProps, toAttr } from "../../utils/toAttr";
 
 export const template = (props: AttrProps) => `

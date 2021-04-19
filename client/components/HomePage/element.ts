@@ -1,5 +1,3 @@
-import '../AddButton/element';
-
 export class HomePage extends HTMLElement {
   constructor() {
     super();

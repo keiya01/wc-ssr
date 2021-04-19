@@ -1,4 +1,4 @@
-import { template as AddButton } from '../AddButton/template';
+import { template as AddButton } from '../AddButton';
 
 type Props = {
   user: {

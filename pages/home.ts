@@ -1,4 +1,4 @@
-import { template } from '../client/components/HomePage/template';
+import { template } from '../client/components/HomePage';
 
 type Props = {
   user: {

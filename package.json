@@ -4,21 +4,28 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build:client": "webpack --config webpack.config.js",
-    "build:server": "tsc --project tsconfig.server.json",
-    "start:server": "ts-node ./server/index.ts --project tsconfig.server.json",
-    "dev": "run-s build:client start:server"
+    "build:client": "webpack --config webpack.client.js",
+    "build:server": "webpack --config webpack.server.js",
+    "start:server": "node ./dist/server/main.bundle.js",
+    "dev": "run-s build:client build:server start:server",
+    "type": "tsc --noEmit"
   },
   "devDependencies": {
+    "@babel/core": "^7.13.15",
+    "@babel/preset-typescript": "^7.13.0",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-transform-remove-imports": "^1.5.2",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
     "npm-run-all": "^4.1.5",
-    "ts-loader": "^8.1.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
     "webpack": "^5.33.2",
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
-    "fastify": "^3.14.2"
+    "fastify": "^3.14.2",
+    "long": "^4.0.0",
+    "pino": "^6.11.3",
+    "pino-pretty": "^4.7.1"
   }
 }
