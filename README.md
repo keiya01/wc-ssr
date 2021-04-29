@@ -1,1 +1,1 @@
-# Thinking Declarative Shadow DOM
+# Blog
