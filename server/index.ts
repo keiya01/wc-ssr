@@ -1,39 +1,39 @@
 import fastify, { FastifyInstance, FastifyLoggerInstance } from 'fastify';
+import fastifyStatic from 'fastify-static';
 import { Server, IncomingMessage, ServerResponse } from 'http';
-import { readFile } from 'fs/promises';
 import { resolve } from 'path';
 import { getServerSideProps } from '../pages/home';
 import { html } from './html';
-
-/**
- * Webpackの代わりにviteを使ってみても良さそう
- */
+import { getScriptFileName } from './resource';
 
 type App = FastifyInstance<Server, IncomingMessage, ServerResponse, FastifyLoggerInstance>;
 
-const getScripts = (pathname: string) => {
-  return `/dist/client${pathname}.bundle.js`
-}
-
 const route = (app: App) => {
-  app.get('/dist/*', async (req, reply) => {
-    reply.header('Content-Type', 'text/javascript; charset=utf-8');
-    try {
-      const content = await readFile(resolve(`.${req.raw.url!}`));
-      reply.send(content);
-    } catch {}
-  });
-
   app.get('/home', async (req, reply) => {
     reply.header('Content-Type', 'text/html; charset=utf-8');
-    const template = getServerSideProps({ user: { name: 'keiya01' }});
+    const template = getServerSideProps();
 
-    reply.send(html(template, [getScripts(req.url)]));
+    reply.send(html(template, { scripts: [getScriptFileName(req.url)] }));
   });
 }
 
 const start = async () => {
   const app = fastify({ logger: true });
+  app.register(
+    fastifyStatic,
+    {
+      root: resolve('dist', 'client'),
+      prefix: '/dist/client/'
+    }
+  );
+  app.register(
+    fastifyStatic,
+    {
+      root: resolve('public'),
+      prefix: '/public/',
+      decorateReply: false,
+    }
+  );
 
   route(app);
 
