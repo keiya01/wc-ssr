@@ -2,7 +2,7 @@ module.exports = (api) => {
   const IS_SERVER = api.caller((caller) => caller && caller.target === 'node');
 
   const presets = [
-    ["@babel/preset-typescript", { parerOpts: { module: IS_SERVER ? 'commonjs' : 'esnext' } }]
+    ["@babel/preset-typescript", { parerOpts: { module: 'esnext' } }]
   ];
 
   const plugins = [];

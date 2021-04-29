@@ -9,6 +9,7 @@
     "build:server": "webpack --config webpack.server.js",
     "start:server": "node ./dist/server/main.bundle.js",
     "dev": "run-s build start:server",
+    "start": "NODE_ENV=production run-s build start:server",
     "type": "tsc --noEmit"
   },
   "devDependencies": {
@@ -28,6 +29,7 @@
     "fastify-static": "^4.0.1",
     "long": "^4.0.0",
     "pino": "^6.11.3",
-    "pino-pretty": "^4.7.1"
+    "pino-pretty": "^4.7.1",
+    "universal-router": "^9.0.1"
   }
 }
