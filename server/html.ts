@@ -11,7 +11,7 @@ export const html = (body: string, { heads, styles, scripts }: Headers) => {
     '<head>',
     '<meta charset="UTF-8">',
     heads ? heads.join('') : '',
-    '<link rel="stylesheet" href="/public/css/app.css">',
+    '<link rel="stylesheet" href="/dist/client/main.css">',
     styles ? styles.map((style) => `<link rel="stylesheet" href="${style}">`).join('') : '',
     '<title>Declarative Shadow DOM</title>',
     scripts ? scripts.map((script) => `<script defer type="module" src="${script}"></script>`).join('') : '',

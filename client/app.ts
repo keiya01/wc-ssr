@@ -1,10 +1,3 @@
-import UniversalRouter from "universal-router";
-import { routes } from "../universal/routes";
-
-const router = new UniversalRouter(routes);
-
-router.resolve({ pathname: window.location.pathname });
-
-window.addEventListener('popstate', () => {
-  router.resolve({ pathname: window.location.pathname });
-});
+import './global/css/app.css';
+import './global/css/reset.css';
+import './router';

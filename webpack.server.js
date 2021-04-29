@@ -11,6 +11,7 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   plugins: [
+    ...common.plugins,
     new webpack.IgnorePlugin({
       resourceRegExp: /.\/element$/,
     })

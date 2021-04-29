@@ -1,6 +1,7 @@
 const path = require('path');
-const fs = require('fs');
 const common = require('./webpack.config');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 // const ClientPagesPath = './pages';
 
@@ -32,4 +33,29 @@ module.exports = {
     filename: '[name].bundle.js',
     chunkFilename: '[name].[contenthash].bundle.js'
   },
+  module: {
+    ...common.module,
+    rules: [
+      ...common.module.rules,
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+    ]
+  },
+  plugins: [
+    ...common.plugins,
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    })
+  ],
+  optimization: {
+    ...(common?.optimization || []),
+    minimizer: [
+      `...`,
+      ...(common?.optimization?.minimizer || []),
+      new CssMinimizerPlugin(),
+    ],
+  }
 };

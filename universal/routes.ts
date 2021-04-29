@@ -1,4 +1,4 @@
-import { Routes } from "universal-router";
+import type { Routes } from "universal-router";
 
 const render = async (load: () => Promise<any>) => {
   const { getServerSideProps } = await load();
