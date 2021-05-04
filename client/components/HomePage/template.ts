@@ -1,20 +1,24 @@
+import { html } from '../../../declarativeShadowDom/html';
 import { template as AddButton } from '../AddButton';
 
 type Props = {
   user: {
     name: string,
-  }
+  } | null,
+  article: string,
 };
 
-export const template = (props: Props) => `
+export const template = (props: Props) => html`
   <home-page>
     <template shadowroot="open">
-      <article>
-        <h2>Article1</h2>
-        <p>hello declarative shadow dom!</p>
-        <span>Data: ${props.user.name}</span>
-      </article>
-      ${AddButton({})}
+      <div>
+        <article>
+          <h2>Article1</h2>
+          <p>${props.article}</p>
+          ${props.user && html`<span>Data: ${props.user.name}</span>`}
+        </article>
+        ${AddButton({ title: 'hey' })}
+      </div>
     </template>
   </home-page>
 `;

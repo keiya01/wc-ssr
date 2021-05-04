@@ -3,6 +3,7 @@ import fastifyStatic from 'fastify-static';
 import { Server, IncomingMessage, ServerResponse } from 'http';
 import { resolve } from 'path';
 import UniversalRouter from 'universal-router';
+import { htmlToString } from '../declarativeShadowDom/html';
 import { routes } from '../universal/routes';
 import { html } from './html';
 import { getScriptFileName } from './resource';
@@ -14,7 +15,7 @@ const route = (app: App) => {
   app.get('*', async (req, reply) => {
     const template = await router.resolve(req.url);
     reply.header('Content-Type', 'text/html; charset=utf-8');
-    reply.send(html(template, { scripts: [getScriptFileName('/main')] }));
+    reply.send(html(htmlToString(template), { scripts: [getScriptFileName('/main')] }));
   });
 }
 

@@ -1,13 +1,23 @@
-import { getInternalShadowRoot } from "../../utils/getInternalShadowRoot";
+import { BaseElement } from "../../../declarativeShadowDom/baseElement";
+import { template } from "./template";
 
-export class HomePage extends HTMLElement {
+export class HomePage extends BaseElement {
   constructor() {
     super();
+  }
 
-    const shadow = getInternalShadowRoot(this);
-    if(!shadow) {
-      throw new Error('Declarative Shadow DOM is not supported in your browser.');
-    }
+  static get properties() {
+    return {
+      article: {},
+    };
+  }
+
+  connectedCallback() {
+    this.setAttribute('article', 'Hello World');
+  }
+
+  render() {
+    return template({ user: null, article: this.getAttribute('article')! })
   }
 }
 

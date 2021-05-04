@@ -1,17 +1,25 @@
-import { getInternalShadowRoot } from "../../utils/getInternalShadowRoot";
+import { BaseElement } from "../../../declarativeShadowDom/baseElement";
+import { template } from "./template";
 
-export class AddButton extends HTMLElement {
+export class AddButton extends BaseElement {
+  count = 0;
   constructor() {
     super();
 
-    const shadow = getInternalShadowRoot(this);
-    if(!shadow) {
-      throw new Error('Declarative Shadow DOM is not supported in your browser.');
-    }
-
     this.addEventListener('click', () => {
-      console.log("CLICKED!!!!");
+      this.count++;
+      this.setAttribute('title', `${this.count}`);
     });
+  }
+
+  static get properties() {
+    return {
+      title: {},
+    }
+  }
+
+  render() {
+    return template({ title: this.getAttribute('title')! });
   }
 }
 

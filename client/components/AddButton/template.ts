@@ -1,15 +1,15 @@
 import './element';
-import { AttrProps, toAttr } from "../../utils/toAttr";
+import { toAttr } from "../../utils/toAttr";
+import { html } from '../../../declarativeShadowDom/html';
 
-const style = `
-  
-`;
+type Props = {
+  title: string;
+}
 
-export const template = (props: AttrProps) => `
+export const template = (props: Props) => html`
   <add-button ${toAttr(props)}>
     <template shadowroot="open">
-      <style>${style}</style>
-      <button type="button">button</button>
+      <button type="button">${props.title}</button>
     </template>
   </add-button>
 `;
