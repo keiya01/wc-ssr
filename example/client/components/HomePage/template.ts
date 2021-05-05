@@ -1,4 +1,4 @@
-import { html } from '../../../../wc-ssr/html';
+import { html } from 'wc-ssr';
 import { template as AddButton } from '../AddButton';
 
 type Props = {

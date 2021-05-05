@@ -1,4 +1,4 @@
-import { BaseElement } from "../../../../wc-ssr/baseElement";
+import { BaseElement } from "wc-ssr/client";
 import { template } from "./template";
 
 export class AddButton extends BaseElement {

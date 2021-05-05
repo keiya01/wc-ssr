@@ -3,7 +3,7 @@ import fastifyStatic from 'fastify-static';
 import { Server, IncomingMessage, ServerResponse } from 'http';
 import { resolve } from 'path';
 import UniversalRouter from 'universal-router';
-import { htmlToString } from '../../wc-ssr/html';
+import { htmlToString } from 'wc-ssr';
 import { routes } from '../universal/routes';
 import { html } from './html';
 import { getScriptFileName } from './resource';

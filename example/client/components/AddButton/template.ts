@@ -1,7 +1,5 @@
 import './element';
-import { toAttr } from "../../../../wc-ssr/attribute";
-import { html } from '../../../../wc-ssr/html';
-import { $event } from '../../../../wc-ssr/attribute';
+import { html, toAttr, $event } from "wc-ssr";
 
 type Props = {
   title: string;
