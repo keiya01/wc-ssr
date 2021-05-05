@@ -13,6 +13,7 @@ export class HomePage extends BaseElement {
   }
 
   connectedCallback() {
+    super.connectedCallback();
     this.setAttribute('article', 'Hello World');
   }
 

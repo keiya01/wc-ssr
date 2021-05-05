@@ -5,11 +5,6 @@ export class AddButton extends BaseElement {
   count = 0;
   constructor() {
     super();
-
-    this.addEventListener('click', () => {
-      this.count++;
-      this.setAttribute('title', `${this.count}`);
-    });
   }
 
   static get properties() {
@@ -18,8 +13,13 @@ export class AddButton extends BaseElement {
     }
   }
 
+  handleOnClick = () => {
+    this.count++;
+    this.setAttribute('title', `${this.count}`);
+  }
+
   render() {
-    return template({ title: this.getAttribute('title')! });
+    return template({ title: this.getAttribute('title')!, onClick: this.handleOnClick });
   }
 }
 

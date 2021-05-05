@@ -1,6 +1,7 @@
 import morphdom from 'morphdom';
 import { ComplexAttributeConverter, Properties, PropertyDeclaration, PropertyKey, HasChanged } from "./properties";
-import { html, htmlToString, isCustomElement } from "./html";
+import { ATTRIBUTE_EVENT_NAME, html, htmlToString, isCustomElement } from "./html";
+import { EventObject, isEvent } from './attribute';
 
 type PropertyDeclarationMap = Map<PropertyKey, PropertyDeclaration>;
 type AttributeMap = Map<string, PropertyKey>;
@@ -59,7 +60,15 @@ const defaultPropertyDeclaration: PropertyDeclaration = {
   hasChanged: notEqual,
 };
 
+const parseShadowDOM = (html: string) => {
+  // @ts-ignore
+  return new DOMParser().parseFromString(html, 'text/html', {
+    includeShadowRoots: true
+  });
+}
+
 export class BaseElement extends HTMLElement {
+  events: EventObject[] = [];
   constructor() {
     super();
 
@@ -210,32 +219,43 @@ export class BaseElement extends HTMLElement {
     }
   }
 
+  initialize() {
+    const html = this.render();
+    html.values.map((val) => {
+      if(isEvent(val)) {
+        this.events.push(val);
+      }
+    });
+    const eventElementList = this.shadowRoot!.querySelectorAll(`[data-${ATTRIBUTE_EVENT_NAME}]`);
+    eventElementList.forEach((elm, i) => {
+      const event = this.events[i];
+      console.log('ADDED EVENT', event, i);
+      if(event.handler) {
+        elm.addEventListener(event.eventName, event.handler!);
+      }
+    });
+  }
+
   update() {
     // @ts-ignore
-    const fragment = new DOMParser().parseFromString(htmlToString(this.render()), 'text/html', {
-      includeShadowRoots: true
-    });
-    const tagnames = fragment.body.getElementsByTagName(this.tagName);
-    if(!tagnames.length) {
-      throw new Error('Could not find updated tagname.');
-    }
-
-    const elm = tagnames[0];
-    if(!elm || !this.shadowRoot) {
-      throw new Error('Could not update custom element');
-    }
+    const fragment = parseShadowDOM(htmlToString(this.render()));
+    const elm = fragment.body.getElementsByTagName(this.tagName)[0];
 
     /**
      * TODO
      *  - The case where element is added
      *  - The case where element is removed
      */
-    morphdom(this.shadowRoot, elm.shadowRoot!.innerHTML, {
+    morphdom(this.shadowRoot!, elm.shadowRoot!.innerHTML, {
       onBeforeElUpdated: (_, to) => {
         this.updateElement(this.shadowRoot!.children[0], to);
         return false;
       }
     });
+  }
+
+  connectedCallback() {
+    this.initialize();
   }
 
   attributeChangedCallback(
