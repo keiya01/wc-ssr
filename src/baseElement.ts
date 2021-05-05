@@ -64,7 +64,7 @@ export class BaseElement extends HTMLElement {
     super();
 
     // @ts-ignore
-    const internals = elm.attachInternals();
+    const internals = this.attachInternals();
     const shadow = internals.shadowRoot as ShadowRoot;
     if(!shadow) {
       throw new Error('Declarative Shadow DOM is not supported in your browser.');

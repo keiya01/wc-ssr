@@ -1,0 +1,7 @@
+{
+  "name": "client",
+  "private": "true",
+  "main": "../dist/client.js",
+  "types": "../dist/client.d.ts",
+  "type": "module"
+}

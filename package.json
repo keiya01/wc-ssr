@@ -1,40 +1,29 @@
 {
-  "name": "blog-with-declarative-shadow-dom",
+  "name": "wc-ssr",
   "version": "0.0.1",
-  "main": "index.js",
+  "description": "SSR with web components",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "type": "module",
+  "repository": "git@github.com:keiya01/wc-ssr.git",
+  "author": "keiya01 <keiya.s.0210@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "run-s build:client build:server",
-    "build:client": "webpack --config webpack.client.js",
-    "build:server": "webpack --config webpack.server.js",
-    "start:server": "node ./dist/server/main.bundle.js",
-    "dev": "run-s build start:server",
-    "start": "NODE_ENV=production run-s build start:server",
-    "type": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.13.15",
-    "@babel/preset-env": "^7.14.1",
-    "@babel/preset-typescript": "^7.13.0",
-    "babel-loader": "^8.2.2",
-    "babel-plugin-transform-remove-imports": "^1.5.2",
-    "clean-webpack-plugin": "^4.0.0-alpha.0",
-    "css-loader": "^5.2.4",
-    "css-minimizer-webpack-plugin": "^2.0.0",
-    "mini-css-extract-plugin": "^1.5.1",
-    "npm-run-all": "^4.1.5",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.2.4",
-    "webpack": "^5.33.2",
-    "webpack-cli": "^4.6.0"
+    "type-declaration": "tsc --emitDeclarationOnly",
+    "build:common": "esbuild src/main.ts src/client.ts --bundle --format=esm --outdir=dist",
+    "build:dev": "run-p build:common type-declaration",
+    "build:prod": "NODE_ENV=production yarn build:common --minify",
+    "build": "run-p build:prod type-declaration",
+    "type": "tsc --noEmit",
+    "prepublish": "run-s type build"
   },
   "dependencies": {
-    "fastify": "^3.14.2",
-    "fastify-static": "^4.0.1",
-    "long": "^4.0.0",
-    "morphdom": "^2.6.1",
-    "pino": "^6.11.3",
-    "pino-pretty": "^4.7.1",
-    "universal-router": "^9.0.1"
+    "morphdom": "^2.6.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "esbuild": "^0.11.18",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^4.2.4"
   }
 }
