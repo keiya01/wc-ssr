@@ -1,11 +1,11 @@
-import { html } from 'wc-ssr';
-import { template as AddButton } from '../AddButton';
+import { html } from "wc-ssr";
+import { template as AddButton } from "../AddButton";
 
 type Props = {
   user: {
-    name: string,
-  } | null,
-  article: string,
+    name: string;
+  } | null;
+  article: string;
 };
 
 export const template = (props: Props) => html`
@@ -17,7 +17,7 @@ export const template = (props: Props) => html`
           <p>${props.article}</p>
           ${props.user && html`<span>Data: ${props.user.name}</span>`}
         </article>
-        ${AddButton({ title: 'hey' })}
+        ${AddButton({ title: "hey" })}
       </div>
     </template>
   </home-page>

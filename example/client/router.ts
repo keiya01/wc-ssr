@@ -5,6 +5,6 @@ const router = new UniversalRouter(routes);
 
 router.resolve({ pathname: window.location.pathname });
 
-window.addEventListener('popstate', () => {
+window.addEventListener("popstate", () => {
   router.resolve({ pathname: window.location.pathname });
 });

@@ -1,7 +1,19 @@
-import morphdom from 'morphdom';
-import { ComplexAttributeConverter, Properties, PropertyDeclaration, PropertyKey, HasChanged } from "./properties";
-import { ATTRIBUTE_EVENT_NAME, html, htmlToString, isCustomElement } from "./html";
-import { EventObject, isEvent } from './attribute';
+import morphdom from "morphdom";
+import {
+  ComplexAttributeConverter,
+  Properties,
+  PropertyDeclaration,
+  PropertyKey,
+  HasChanged,
+} from "./properties";
+import {
+  ATTRIBUTE_EVENT_NAME,
+  html,
+  htmlToString,
+  isCustomElement,
+  TemplateResult,
+} from "./html";
+import { EventObject, isEvent } from "./attribute";
 
 type PropertyDeclarationMap = Map<PropertyKey, PropertyDeclaration>;
 type AttributeMap = Map<string, PropertyKey>;
@@ -10,7 +22,7 @@ export const defaultConverter: ComplexAttributeConverter = {
   toAttribute(value: unknown, type?: unknown): unknown {
     switch (type) {
       case Boolean:
-        value = value ? '' : null;
+        value = value ? "" : null;
         break;
       case Object:
       case Array:
@@ -33,12 +45,11 @@ export const defaultConverter: ComplexAttributeConverter = {
         break;
       case Object:
       case Array:
-        // Do *not* generate exception when invalid JSON is set as elements
-        // don't normally complain on being mis-configured.
-        // TODO(sorvell): Do generate exception in *dev mode*.
+        if (!value) {
+          break;
+        }
         try {
-          // Assert to adhere to Bazel's "must type assert JSON parse" rule.
-          fromValue = JSON.parse(value!) as unknown;
+          fromValue = JSON.parse(value) as unknown;
         } catch (e) {
           fromValue = null;
         }
@@ -61,22 +72,26 @@ const defaultPropertyDeclaration: PropertyDeclaration = {
 };
 
 const parseShadowDOM = (html: string) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return new DOMParser().parseFromString(html, 'text/html', {
-    includeShadowRoots: true
+  return new DOMParser().parseFromString(html, "text/html", {
+    includeShadowRoots: true,
   });
-}
+};
 
 export class BaseElement extends HTMLElement {
   events: EventObject[] = [];
   constructor() {
     super();
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const internals = this.attachInternals();
     const shadow = internals.shadowRoot as ShadowRoot;
-    if(!shadow) {
-      throw new Error('Declarative Shadow DOM is not supported in your browser.');
+    if (!shadow) {
+      throw new Error(
+        "Declarative Shadow DOM is not supported in your browser."
+      );
     }
   }
 
@@ -88,15 +103,12 @@ export class BaseElement extends HTMLElement {
   static createProperty(
     name: PropertyKey,
     options: PropertyDeclaration = defaultPropertyDeclaration
-  ) {
-    this.elementProperties!.set(name, options);
-    // Do not generate an accessor if the prototype already has one, since
-    // it would be lost otherwise and that would never be the user's intention;
-    // Instead, we expect users to call `requestUpdate` themselves from
-    // user-defined accessors. Note that if the super has an accessor we will
-    // still overwrite it
-    if (!this.prototype.hasOwnProperty(name)) {
-      const key = typeof name === 'symbol' ? Symbol() : `__${name}`;
+  ): void {
+    if (this.elementProperties) {
+      this.elementProperties.set(name, options);
+    }
+    if (!Object.prototype.hasOwnProperty.call(this.prototype, name)) {
+      const key = typeof name === "symbol" ? Symbol() : `__${name}`;
       const descriptor = this.getPropertyDescriptor(name, key, options);
       if (descriptor !== undefined) {
         Object.defineProperty(this.prototype, name, descriptor);
@@ -108,17 +120,19 @@ export class BaseElement extends HTMLElement {
     name: PropertyKey,
     key: string | symbol,
     options: PropertyDeclaration
-  ) {
+  ): PropertyDescriptor {
     return {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       get(): any {
-        return (this as {[key: string]: unknown})[key as string];
+        return (this as { [key: string]: unknown })[key as string];
       },
       set(this: BaseElement, value: unknown) {
-        const oldValue = ((this as {}) as {[key: string]: unknown})[
+        const oldValue = ((this as unknown) as { [key: string]: unknown })[
           name as string
         ];
-        ((this as {}) as {[key: string]: unknown})[key as string] = value;
+        ((this as unknown) as { [key: string]: unknown })[
+          key as string
+        ] = value;
         ((this as unknown) as BaseElement).requestUpdate(
           name,
           oldValue,
@@ -130,11 +144,14 @@ export class BaseElement extends HTMLElement {
     };
   }
 
-  protected static getPropertyOptions(name: PropertyKey) {
-    return this.elementProperties!.get(name) || defaultPropertyDeclaration;
+  protected static getPropertyOptions(name: PropertyKey): PropertyDeclaration {
+    return (
+      (this.elementProperties && this.elementProperties.get(name)) ||
+      defaultPropertyDeclaration
+    );
   }
 
-  static finalize() {
+  static finalize(): void {
     this.elementProperties = new Map();
     // initialize Map populated in observedAttributes
     this.__attributeToPropertyMap = new Map();
@@ -142,7 +159,7 @@ export class BaseElement extends HTMLElement {
     // Note, only process "own" properties since this element will inherit
     // any properties defined on the superClass, and finalization ensures
     // the entire prototype chain is finalized.
-    if (this.hasOwnProperty('properties')) {
+    if (Object.prototype.hasOwnProperty.call(this, "properties")) {
       const props = this.properties;
       // support symbols in properties (IE11 does not support this)
       const propKeys = [
@@ -166,17 +183,20 @@ export class BaseElement extends HTMLElement {
     const attribute = options.attribute;
     return attribute === false
       ? undefined
-      : typeof attribute === 'string'
+      : typeof attribute === "string"
       ? attribute
-      : typeof name === 'string'
+      : typeof name === "string"
       ? name.toLowerCase()
       : undefined;
   }
 
-  static get observedAttributes() {
+  static get observedAttributes(): string[] {
     this.finalize();
     const attributes: string[] = [];
-    this.elementProperties!.forEach((v, p) => {
+    if (!this.elementProperties) {
+      return [];
+    }
+    this.elementProperties.forEach((v, p) => {
       const attr = this.__attributeNameForProperty(p, v);
       if (attr !== undefined) {
         this.__attributeToPropertyMap.set(attr, p);
@@ -186,7 +206,11 @@ export class BaseElement extends HTMLElement {
     return attributes;
   }
 
-  requestUpdate(name?: PropertyKey, oldValue?: unknown, options?: PropertyDeclaration) {
+  requestUpdate(
+    name?: PropertyKey,
+    oldValue?: unknown,
+    options?: PropertyDeclaration
+  ): void {
     let shouldRequestUpdate = false;
     // If we have a property key, perform property update steps.
     if (name !== undefined) {
@@ -204,7 +228,7 @@ export class BaseElement extends HTMLElement {
     }
   }
 
-  _$attributeToProperty(name: string, value: string | null) {
+  _$attributeToProperty(name: string, value: string | null): void {
     const ctor = this.constructor as typeof BaseElement;
     // Note, hint this as an `AttributeMap` so closure clearly understands
     // the type; it has issues with tracking types through statics
@@ -214,55 +238,74 @@ export class BaseElement extends HTMLElement {
     if (propName !== undefined) {
       const options = ctor.getPropertyOptions(propName);
       const fromAttribute = defaultConverter.fromAttribute;
+      if (!fromAttribute) {
+        return;
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      this[propName as keyof this] = fromAttribute!(value, options.type) as any;
+      this[propName as keyof this] = fromAttribute(value, options.type) as any;
     }
   }
 
-  initialize() {
+  initialize(): void {
     const html = this.render();
     html.values.map((val) => {
-      if(isEvent(val)) {
+      if (isEvent(val)) {
         this.events.push(val);
       }
     });
-    const eventElementList = this.shadowRoot!.querySelectorAll(`[data-${ATTRIBUTE_EVENT_NAME}]`);
+    if (!this.shadowRoot) {
+      return;
+    }
+    const eventElementList = this.shadowRoot.querySelectorAll(
+      `[data-${ATTRIBUTE_EVENT_NAME}]`
+    );
     eventElementList.forEach((elm, i) => {
       const event = this.events[i];
-      if(event.handler) {
-        elm.addEventListener(event.eventName, event.handler!);
+      if (event.handler) {
+        elm.addEventListener(event.eventName, event.handler);
       }
     });
   }
 
-  update() {
-    // @ts-ignore
+  update(): void {
     const fragment = parseShadowDOM(htmlToString(this.render()));
     const elm = fragment.body.getElementsByTagName(this.tagName)[0];
+
+    const fromElement = this.shadowRoot;
+    const toElement = elm.shadowRoot;
+
+    if (!fromElement || !toElement) {
+      return;
+    }
 
     /**
      * TODO
      *  - The case where element is added
      *  - The case where element is removed
      */
-    morphdom(this.shadowRoot!, elm.shadowRoot!.innerHTML, {
+    morphdom(fromElement, toElement.innerHTML, {
       onBeforeElUpdated: (_, to) => {
-        this.updateElement(this.shadowRoot!.children[0], to);
+        this.updateElement(fromElement.children[0], to);
         return false;
-      }
+      },
     });
   }
 
-  connectedCallback() {
+  connectedCallback(): void {
     this.initialize();
   }
 
-  disconnectedCallback() {
-    const eventElementList = this.shadowRoot!.querySelectorAll(`[data-${ATTRIBUTE_EVENT_NAME}]`);
+  disconnectedCallback(): void {
+    if (!this.shadowRoot) {
+      return;
+    }
+    const eventElementList = this.shadowRoot.querySelectorAll(
+      `[data-${ATTRIBUTE_EVENT_NAME}]`
+    );
     eventElementList.forEach((elm, i) => {
       const event = this.events[i];
-      if(event.handler) {
-        elm.removeEventListener(event.eventName, event.handler!);
+      if (event.handler) {
+        elm.removeEventListener(event.eventName, event.handler);
       }
     });
   }
@@ -271,30 +314,34 @@ export class BaseElement extends HTMLElement {
     name: string,
     _old: string | null,
     value: string | null
-  ) {
+  ): void {
     this._$attributeToProperty(name, value);
   }
 
   // simple hydration
-  updateElement(from: ChildNode, to: ChildNode) {
+  updateElement(from: ChildNode, to: ChildNode): void {
     let i = -1;
     // NOTE: fromElement should be same structure with toElement.
-    while(true) {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
       i++;
       const fromChild = from.childNodes[i];
-      if(!fromChild) {
+      if (!fromChild) {
         return;
       }
-      if(fromChild.nodeType === document.ELEMENT_NODE && isCustomElement((fromChild as Element).tagName)) {
+      if (
+        fromChild.nodeType === document.ELEMENT_NODE &&
+        isCustomElement((fromChild as Element).tagName)
+      ) {
         continue;
       }
       const toChild = to.childNodes[i];
-      if(!toChild) {
+      if (!toChild) {
         return;
       }
 
       // for textNode
-      if(toChild.nodeType === document.TEXT_NODE) {
+      if (toChild.nodeType === document.TEXT_NODE) {
         fromChild.textContent = toChild.textContent;
       } else {
         this.updateElement(fromChild, toChild);
@@ -303,7 +350,7 @@ export class BaseElement extends HTMLElement {
   }
 
   // TODO: DOMParser使うと良さそう: https://web.dev/declarative-shadow-dom/#parser-only
-  render() {
+  render(): TemplateResult {
     return html``;
   }
 }

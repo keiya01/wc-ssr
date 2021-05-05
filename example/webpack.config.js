@@ -1,26 +1,24 @@
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
-const isProd = process.env.NODE_ENV === 'production';
+const isProd = process.env.NODE_ENV === "production";
 
 module.exports = {
-  mode: isProd ? 'production' : 'development',
+  mode: isProd ? "production" : "development",
   module: {
     rules: [
       {
         test: /\.ts$/,
         use: [
           {
-            loader: 'babel-loader',
-          }
+            loader: "babel-loader",
+          },
         ],
-        exclude: /node_modules/
-      }
-    ]
+        exclude: /node_modules/,
+      },
+    ],
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
+    extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],
   },
-  plugins: [
-    new CleanWebpackPlugin(),
-  ]
+  plugins: [new CleanWebpackPlugin()],
 };

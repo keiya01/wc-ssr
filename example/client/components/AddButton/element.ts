@@ -10,17 +10,20 @@ export class AddButton extends BaseElement {
   static get properties() {
     return {
       title: {},
-    }
+    };
   }
 
   handleOnClick = () => {
     this.count++;
-    this.setAttribute('title', `${this.count}`);
-  }
+    this.setAttribute("title", `${this.count}`);
+  };
 
   render() {
-    return template({ title: this.getAttribute('title')!, onClick: this.handleOnClick });
+    return template({
+      title: this.getAttribute("title")!,
+      onClick: this.handleOnClick,
+    });
   }
 }
 
-customElements.define('add-button', AddButton);
+customElements.define("add-button", AddButton);

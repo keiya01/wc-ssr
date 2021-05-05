@@ -2,9 +2,8 @@
   "name": "wc-ssr",
   "version": "0.0.1",
   "description": "SSR with web components",
-  "main": "dist/main.js",
+  "module": "dist/main.js",
   "types": "dist/main.d.ts",
-  "type": "module",
   "repository": "git@github.com:keiya01/wc-ssr.git",
   "author": "keiya01 <keiya.s.0210@gmail.com>",
   "license": "MIT",
@@ -15,15 +14,25 @@
     "build:prod": "NODE_ENV=production yarn build:common --minify",
     "build": "run-p build:prod type-declaration",
     "type": "tsc --noEmit",
-    "prepublish": "run-s type build"
+    "lint:prettier": "prettier --check .",
+    "lint:eslint": "eslint --ext .ts src",
+    "fix": "run-s fix:*",
+    "fix:prettier": "prettier -w .",
+    "fix:eslint": "yarn lint:eslint --fix",
+    "prepublish": "run-s fix type build"
   },
   "dependencies": {
     "morphdom": "^2.6.1"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
     "esbuild": "^0.11.18",
+    "eslint": "^7.25.0",
+    "eslint-config-prettier": "^8.3.0",
     "npm-run-all": "^4.1.5",
+    "prettier": "^2.2.1",
     "typescript": "^4.2.4"
   }
 }

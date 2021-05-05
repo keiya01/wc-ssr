@@ -1,2 +1,2 @@
-import './element';
-export * from './template';
+import "./element";
+export * from "./template";

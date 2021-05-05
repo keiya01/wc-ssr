@@ -21,7 +21,7 @@ export type PropertyDeclaration<TypeHint = unknown> = {
   readonly attribute?: string | boolean;
   hasChanged?: HasChanged;
   readonly converter?: AttributeConverter;
-}
+};
 
 export type PropertyKey = string | number | symbol;
 

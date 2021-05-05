@@ -14,12 +14,12 @@ export class HomePage extends BaseElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this.setAttribute('article', 'Hello World');
+    this.setAttribute("article", "Hello World");
   }
 
   render() {
-    return template({ user: null, article: this.getAttribute('article')! })
+    return template({ user: null, article: this.getAttribute("article")! });
   }
 }
 
-customElements.define('home-page', HomePage);
+customElements.define("home-page", HomePage);

@@ -1,1 +1,1 @@
-export const SUB_RESOURCE_DIRNAME = '/dist/client';
+export const SUB_RESOURCE_DIRNAME = "/dist/client";
