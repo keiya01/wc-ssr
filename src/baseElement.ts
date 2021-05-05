@@ -229,7 +229,6 @@ export class BaseElement extends HTMLElement {
     const eventElementList = this.shadowRoot!.querySelectorAll(`[data-${ATTRIBUTE_EVENT_NAME}]`);
     eventElementList.forEach((elm, i) => {
       const event = this.events[i];
-      console.log('ADDED EVENT', event, i);
       if(event.handler) {
         elm.addEventListener(event.eventName, event.handler!);
       }
@@ -256,6 +255,16 @@ export class BaseElement extends HTMLElement {
 
   connectedCallback() {
     this.initialize();
+  }
+
+  disconnectedCallback() {
+    const eventElementList = this.shadowRoot!.querySelectorAll(`[data-${ATTRIBUTE_EVENT_NAME}]`);
+    eventElementList.forEach((elm, i) => {
+      const event = this.events[i];
+      if(event.handler) {
+        elm.removeEventListener(event.eventName, event.handler!);
+      }
+    });
   }
 
   attributeChangedCallback(
