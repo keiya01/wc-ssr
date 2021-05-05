@@ -1,4 +1,4 @@
-import { html } from '../../../declarativeShadowDom/html';
+import { html } from '../../../../wc-ssr/html';
 import { template as AddButton } from '../AddButton';
 
 type Props = {

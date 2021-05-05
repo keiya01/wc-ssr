@@ -1,1 +1,1 @@
-# Blog With Declarative Shadow DOM
+# wc-ssr

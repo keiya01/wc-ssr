@@ -1,4 +1,4 @@
-import { BaseElement } from "../../../declarativeShadowDom/baseElement";
+import { BaseElement } from "../../../../wc-ssr/baseElement";
 import { template } from "./template";
 
 export class HomePage extends BaseElement {

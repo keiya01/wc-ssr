@@ -1,5 +1,4 @@
 import morphdom from 'morphdom';
-import { getInternalShadowRoot } from "../client/utils/getInternalShadowRoot";
 import { ComplexAttributeConverter, Properties, PropertyDeclaration, PropertyKey, HasChanged } from "./properties";
 import { html, htmlToString, isCustomElement } from "./html";
 
@@ -64,7 +63,9 @@ export class BaseElement extends HTMLElement {
   constructor() {
     super();
 
-    const shadow = getInternalShadowRoot(this);
+    // @ts-ignore
+    const internals = elm.attachInternals();
+    const shadow = internals.shadowRoot as ShadowRoot;
     if(!shadow) {
       throw new Error('Declarative Shadow DOM is not supported in your browser.');
     }
@@ -224,10 +225,14 @@ export class BaseElement extends HTMLElement {
       throw new Error('Could not update custom element');
     }
 
-    const updateElement = this.updateElement.bind(this);
+    /**
+     * TODO
+     *  - The case where element is added
+     *  - The case where element is removed
+     */
     morphdom(this.shadowRoot, elm.shadowRoot!.innerHTML, {
       onBeforeElUpdated: (_, to) => {
-        updateElement(this.shadowRoot!.children[0], to);
+        this.updateElement(this.shadowRoot!.children[0], to);
         return false;
       }
     });
