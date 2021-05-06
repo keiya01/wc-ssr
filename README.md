@@ -54,6 +54,7 @@ customElements.define("add-button", AddButton);
 
 ```
 
+**NOTE: If you want to use SSR feature, you should remove `import './element'` like [this example](https://github.com/keiya01/wc-ssr/blob/master/example/babel.config.js#L10-L17).**
 ```ts
 // client/AddButton/index.ts
 
