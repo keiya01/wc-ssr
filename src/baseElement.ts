@@ -1,3 +1,4 @@
+import shallowequal from 'shallowequal';
 import morphdom from "morphdom";
 import {
   ComplexAttributeConverter,
@@ -8,12 +9,14 @@ import {
 } from "./properties";
 import {
   ATTRIBUTE_EVENT_NAME,
+  ATTRIBUTE_PROPS_NAME,
   html,
   htmlToString,
   isCustomElement,
+  isTemplateResult,
   TemplateResult,
 } from "./html";
-import { EventObject, isEvent } from "./attribute";
+import { BaseProps, EventObject, isEvent, isProps, PropsObject } from "./attribute";
 
 type PropertyDeclarationMap = Map<PropertyKey, PropertyDeclaration>;
 type AttributeMap = Map<string, PropertyKey>;
@@ -79,8 +82,14 @@ const parseShadowDOM = (html: string) => {
   });
 };
 
-export class BaseElement extends HTMLElement {
-  events: EventObject[] = [];
+export type BaseState = Record<PropertyKey, unknown>;
+
+export class BaseElement<Props extends BaseProps = BaseProps, State extends BaseState = BaseState> extends HTMLElement {
+  private events: EventObject[] = [];
+  private __props: Props = {} as Props;
+  public state: State = {} as State;
+  public props: Props = {} as Props;
+
   constructor() {
     super();
 
@@ -192,7 +201,7 @@ export class BaseElement extends HTMLElement {
 
   static get observedAttributes(): string[] {
     this.finalize();
-    const attributes: string[] = [];
+    const attributes: string[] = [`${ATTRIBUTE_PROPS_NAME}-changed`];
     if (!this.elementProperties) {
       return [];
     }
@@ -246,23 +255,66 @@ export class BaseElement extends HTMLElement {
     }
   }
 
-  initialize(): void {
+  updateProps(): void {
     const html = this.render();
+    const fragment = parseShadowDOM(htmlToString(html));
+    const elm = fragment.body.getElementsByTagName(this.tagName)[0];
+
+    if(!elm.shadowRoot) {
+      return;
+    }
+    const eventElementList = elm.shadowRoot.querySelectorAll(`[data-${ATTRIBUTE_EVENT_NAME}]`);
+    const propsElementList = elm.shadowRoot.querySelectorAll(`[data-${ATTRIBUTE_PROPS_NAME}]`);
+
+    const propsList = [] as PropsObject[];
     html.values.map((val) => {
-      if (isEvent(val)) {
+      if (eventElementList.length !== 0 && isEvent(val) && val.handler) {
         this.events.push(val);
       }
+      if(isTemplateResult(val)) {
+        /**
+         * <custom-elm1>
+         *  <custom-elm2></custom-elm2> <- find this props. This element is included in html.values.
+         * </custom-elm1>
+         */
+        val.values.find((innerVal) => {
+          if(propsElementList.length !== 0 && isProps(innerVal)) {
+            propsList.push(innerVal);
+            return true;
+          }
+          return false;
+        })
+      }
     });
+    this.setEvent();
+    this.setProps(propsList);
+  }
+
+  setEvent(): void {
     if (!this.shadowRoot) {
       return;
     }
-    const eventElementList = this.shadowRoot.querySelectorAll(
-      `[data-${ATTRIBUTE_EVENT_NAME}]`
-    );
+    const eventElementList = this.shadowRoot.querySelectorAll(`[data-${ATTRIBUTE_EVENT_NAME}]`);
     eventElementList.forEach((elm, i) => {
       const event = this.events[i];
-      if (event.handler) {
+      if (event && event.handler) {
         elm.addEventListener(event.eventName, event.handler);
+      }
+    });
+  }
+
+  setProps(propsList: PropsObject[]): void {
+    if (!this.shadowRoot) {
+      return;
+    }
+    const propsElementList = this.shadowRoot.querySelectorAll(`[data-${ATTRIBUTE_PROPS_NAME}]`);
+    propsElementList.forEach((elm, i) => {
+      const propsObj = propsList[i];
+      if (propsObj && propsObj.props && Object.keys(propsObj.props).length) {
+        if(!shallowequal((elm as BaseElement).__props, propsObj.props)) {
+          (elm as BaseElement).__props = propsObj.props;
+          elm.setAttribute(`${ATTRIBUTE_PROPS_NAME}-changed`, 'true');
+        }
       }
     });
   }
@@ -278,6 +330,9 @@ export class BaseElement extends HTMLElement {
       return;
     }
 
+    this.resetEvents();
+    this.updateProps();
+
     /**
      * TODO
      *  - The case where element is added
@@ -292,10 +347,31 @@ export class BaseElement extends HTMLElement {
   }
 
   connectedCallback(): void {
-    this.initialize();
+    setTimeout(() => {
+      this.props = (this as Record<string, unknown>).__props as Props;
+      this.updateProps();
+    }, 0);
+    this.updateProps();
   }
 
   disconnectedCallback(): void {
+    this.resetEvents();
+  }
+
+  attributeChangedCallback(
+    name: string,
+    _old: string | null,
+    value: string | null
+  ): void {
+    if(name === `${ATTRIBUTE_PROPS_NAME}-changed`) {
+      this.props = this.__props;
+      this.update();
+      return;
+    }
+    this._$attributeToProperty(name, value);
+  }
+
+  resetEvents(): void {
     if (!this.shadowRoot) {
       return;
     }
@@ -304,18 +380,19 @@ export class BaseElement extends HTMLElement {
     );
     eventElementList.forEach((elm, i) => {
       const event = this.events[i];
-      if (event.handler) {
+      if (event && event.handler) {
         elm.removeEventListener(event.eventName, event.handler);
       }
     });
+    this.events = [];
   }
 
-  attributeChangedCallback(
-    name: string,
-    _old: string | null,
-    value: string | null
-  ): void {
-    this._$attributeToProperty(name, value);
+  setState(obj: State): void {
+    this.state = {
+      ...this.state,
+      ...obj,
+    };
+    this.update();
   }
 
   // simple hydration

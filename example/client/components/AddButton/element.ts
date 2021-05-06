@@ -2,7 +2,6 @@ import { BaseElement } from "wc-ssr/client";
 import { template } from "./template";
 
 export class AddButton extends BaseElement {
-  count = 0;
   constructor() {
     super();
   }
@@ -13,15 +12,10 @@ export class AddButton extends BaseElement {
     };
   }
 
-  handleOnClick = () => {
-    this.count++;
-    this.setAttribute("title", `${this.count}`);
-  };
-
   render() {
     return template({
-      title: this.getAttribute("title")!,
-      onClick: this.handleOnClick,
+      title: this.props.title,
+      onClick: this.props.onClick,
     });
   }
 }
