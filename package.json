@@ -19,20 +19,26 @@
     "fix": "run-s fix:*",
     "fix:prettier": "prettier -w .",
     "fix:eslint": "yarn lint:eslint --fix",
-    "prepublish": "run-s fix type build"
+    "prepublish": "run-s fix type build",
+    "test": "jest"
   },
   "dependencies": {
     "morphdom": "^2.6.1",
     "shallowequal": "^1.1.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.14.0",
+    "@babel/preset-env": "^7.14.1",
+    "@babel/preset-typescript": "^7.13.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
+    "@types/jest": "^26.0.23",
     "@types/shallowequal": "^1.1.1",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",
     "esbuild": "^0.11.18",
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
+    "jest": "^26.6.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1",
     "typescript": "^4.2.4"
