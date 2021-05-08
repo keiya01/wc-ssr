@@ -1,4 +1,4 @@
-import shallowequal from 'shallowequal';
+import shallowequal from "shallowequal";
 import morphdom from "morphdom";
 import {
   ComplexAttributeConverter,
@@ -16,7 +16,13 @@ import {
   isTemplateResult,
   TemplateResult,
 } from "./html";
-import { BaseProps, EventObject, isEvent, isProps, PropsObject } from "./attribute";
+import {
+  BaseProps,
+  EventObject,
+  isEvent,
+  isProps,
+  PropsObject,
+} from "./attribute";
 
 type PropertyDeclarationMap = Map<PropertyKey, PropertyDeclaration>;
 type AttributeMap = Map<string, PropertyKey>;
@@ -84,7 +90,10 @@ const parseShadowDOM = (html: string) => {
 
 export type BaseState = Record<PropertyKey, unknown>;
 
-export class BaseElement<Props extends BaseProps = BaseProps, State extends BaseState = BaseState> extends HTMLElement {
+export class BaseElement<
+  Props extends BaseProps = BaseProps,
+  State extends BaseState = BaseState
+> extends HTMLElement {
   private events: EventObject[] = [];
   private __props: Props = {} as Props;
   public state: State = {} as State;
@@ -260,30 +269,34 @@ export class BaseElement<Props extends BaseProps = BaseProps, State extends Base
     const fragment = parseShadowDOM(htmlToString(html));
     const elm = fragment.body.getElementsByTagName(this.tagName)[0];
 
-    if(!elm.shadowRoot) {
+    if (!elm.shadowRoot) {
       return;
     }
-    const eventElementList = elm.shadowRoot.querySelectorAll(`[data-${ATTRIBUTE_EVENT_NAME}]`);
-    const propsElementList = elm.shadowRoot.querySelectorAll(`[data-${ATTRIBUTE_PROPS_NAME}]`);
+    const eventElementList = elm.shadowRoot.querySelectorAll(
+      `[data-${ATTRIBUTE_EVENT_NAME}]`
+    );
+    const propsElementList = elm.shadowRoot.querySelectorAll(
+      `[data-${ATTRIBUTE_PROPS_NAME}]`
+    );
 
     const propsList = [] as PropsObject[];
     html.values.map((val) => {
       if (eventElementList.length !== 0 && isEvent(val) && val.handler) {
         this.events.push(val);
       }
-      if(isTemplateResult(val)) {
+      if (isTemplateResult(val)) {
         /**
          * <custom-elm1>
          *  <custom-elm2></custom-elm2> <- find this props. This element is included in html.values.
          * </custom-elm1>
          */
         val.values.find((innerVal) => {
-          if(propsElementList.length !== 0 && isProps(innerVal)) {
+          if (propsElementList.length !== 0 && isProps(innerVal)) {
             propsList.push(innerVal);
             return true;
           }
           return false;
-        })
+        });
       }
     });
     this.setEvent();
@@ -294,7 +307,9 @@ export class BaseElement<Props extends BaseProps = BaseProps, State extends Base
     if (!this.shadowRoot) {
       return;
     }
-    const eventElementList = this.shadowRoot.querySelectorAll(`[data-${ATTRIBUTE_EVENT_NAME}]`);
+    const eventElementList = this.shadowRoot.querySelectorAll(
+      `[data-${ATTRIBUTE_EVENT_NAME}]`
+    );
     eventElementList.forEach((elm, i) => {
       const event = this.events[i];
       if (event && event.handler) {
@@ -307,13 +322,15 @@ export class BaseElement<Props extends BaseProps = BaseProps, State extends Base
     if (!this.shadowRoot) {
       return;
     }
-    const propsElementList = this.shadowRoot.querySelectorAll(`[data-${ATTRIBUTE_PROPS_NAME}]`);
+    const propsElementList = this.shadowRoot.querySelectorAll(
+      `[data-${ATTRIBUTE_PROPS_NAME}]`
+    );
     propsElementList.forEach((elm, i) => {
       const propsObj = propsList[i];
       if (propsObj && propsObj.props && Object.keys(propsObj.props).length) {
-        if(!shallowequal((elm as BaseElement).__props, propsObj.props)) {
+        if (!shallowequal((elm as BaseElement).__props, propsObj.props)) {
           (elm as BaseElement).__props = propsObj.props;
-          elm.setAttribute(`${ATTRIBUTE_PROPS_NAME}-changed`, 'true');
+          elm.setAttribute(`${ATTRIBUTE_PROPS_NAME}-changed`, "true");
         }
       }
     });
@@ -363,7 +380,7 @@ export class BaseElement<Props extends BaseProps = BaseProps, State extends Base
     _old: string | null,
     value: string | null
   ): void {
-    if(name === `${ATTRIBUTE_PROPS_NAME}-changed`) {
+    if (name === `${ATTRIBUTE_PROPS_NAME}-changed`) {
       this.props = this.__props;
       this.update();
       return;

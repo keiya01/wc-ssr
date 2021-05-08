@@ -1,1 +1,1 @@
-export * from "./baseElement";
+export { BaseElement } from "./baseElement";

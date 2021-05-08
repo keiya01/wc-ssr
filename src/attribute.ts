@@ -19,19 +19,18 @@ export type PropsObject = {
 
 export type AttributeResult = EventObject | PropsObject;
 
-export const isEvent = (value: unknown): value is EventObject => {
-  if (typeof value !== "object" || !value) {
-    return false;
-  }
-  const hasProperty = Object.prototype.hasOwnProperty.bind(value);
-  const isEventObject =
-    hasProperty("type") && hasProperty("eventName") && hasProperty("handler");
-  if (!isEventObject) {
-    return false;
-  }
-  const eventObj = value as EventObject;
-  return eventObj.type === ATTRIBUTE_EVENT && !!eventObj.eventName;
-};
+export const hasProperties = <T extends Record<string, unknown>>(
+  value: unknown,
+  keys: (keyof T)[]
+): value is T =>
+  typeof value === "object" &&
+  !!value &&
+  keys.every((key) => Object.prototype.hasOwnProperty.call(value, key));
+
+export const isEvent = (value: unknown): value is EventObject =>
+  hasProperties<EventObject>(value, ["type", "eventName", "handler"]) &&
+  value.type === ATTRIBUTE_EVENT &&
+  !!value.eventName;
 
 // TODO: イベントは`data-wc-ssr-event=EVENT_NUMBER`のようにマークをつけておいて後から`EVENT_NUMBER`のイベントをその要素に追加すれば良いのでは？
 export const $event = (
@@ -43,18 +42,10 @@ export const $event = (
   handler,
 });
 
-export const isProps = (value: unknown): value is PropsObject => {
-  if (typeof value !== "object" || !value) {
-    return false;
-  }
-  const hasProperty = Object.prototype.hasOwnProperty.bind(value);
-  const isPropsObject = hasProperty("type") && hasProperty("props");
-  if (!isPropsObject) {
-    return false;
-  }
-  const propsObj = value as PropsObject;
-  return propsObj.type === ATTRIBUTE_PROPS && !!propsObj.props;
-};
+export const isProps = (value: unknown): value is PropsObject =>
+  hasProperties<PropsObject>(value, ["type", "props"]) &&
+  value.type === ATTRIBUTE_PROPS &&
+  !!value.props;
 
 export const $props = <Props extends BaseProps>(
   props: Props
