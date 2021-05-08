@@ -51,15 +51,15 @@ export class AddButton extends BaseElement {
 }
 
 customElements.define("add-button", AddButton);
-
 ```
 
 **NOTE: If you want to use SSR feature, you should remove `import './element'` like [this example](https://github.com/keiya01/wc-ssr/blob/master/example/babel.config.js#L10-L17).**
+
 ```ts
 // client/AddButton/index.ts
 
-import './element';
-export { template } from './template';
+import "./element";
+export { template } from "./template";
 ```
 
 ```ts
@@ -123,26 +123,26 @@ See detail in [example](https://github.com/keiya01/wc-ssr/tree/master/example).
 
 ### Props
 
-*TODO*
+_TODO_
 
 ### State
 
-*TODO*
+_TODO_
 
 ### Event
 
-*TODO*
+_TODO_
 
 ### Attribute
 
-*TODO*
+_TODO_
 
 ### Lifecycle
 
 ### Hydration
 
-*TODO*
+_TODO_
 
 ### Server Side Rendering
 
-*TODO*
+_TODO_
