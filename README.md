@@ -137,6 +137,8 @@ See detail in [example](https://github.com/keiya01/wc-ssr/tree/master/example).
 
 *TODO*
 
+### Lifecycle
+
 ### Hydration
 
 *TODO*
