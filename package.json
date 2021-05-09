@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "SSR with web components",
   "module": "dist/main.js",
-  "types": "dist/main.d.ts",
+  "types": "dist/src/main.d.ts",
   "repository": "git@github.com:keiya01/wc-ssr.git",
   "author": "keiya01 <keiya.s.0210@gmail.com>",
   "license": "MIT",
@@ -20,7 +20,9 @@
     "fix:prettier": "prettier -w .",
     "fix:eslint": "yarn lint:eslint --fix",
     "prepublish": "run-s fix type build",
-    "test": "jest"
+    "test": "run-p test:unit test:browser",
+    "test:unit": "jest __tests__",
+    "test:browser": "jest __browserTests__"
   },
   "dependencies": {
     "morphdom": "^2.6.1",
@@ -31,7 +33,10 @@
     "@babel/preset-env": "^7.14.1",
     "@babel/preset-typescript": "^7.13.0",
     "@rollup/plugin-node-resolve": "^13.0.0",
+    "@types/expect-puppeteer": "^4.4.5",
     "@types/jest": "^26.0.23",
+    "@types/jest-environment-puppeteer": "^4.4.1",
+    "@types/puppeteer": "^5.4.3",
     "@types/shallowequal": "^1.1.1",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",
@@ -39,8 +44,10 @@
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
     "jest": "^26.6.3",
+    "jest-puppeteer": "^5.0.3",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1",
+    "puppeteer": "^9.1.1",
     "typescript": "^4.2.4"
   }
 }

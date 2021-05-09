@@ -8,4 +8,5 @@ module.exports = {
     "\\.[jt]s$": "babel-jest",
   },
   transformIgnorePatterns: ["/node_modules/"],
+  preset: "jest-puppeteer",
 };

@@ -2,6 +2,6 @@
   "name": "client",
   "private": "true",
   "main": "../dist/client.js",
-  "types": "../dist/client.d.ts",
+  "types": "../dist/src/client.d.ts",
   "type": "module"
 }

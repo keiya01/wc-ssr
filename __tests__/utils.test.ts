@@ -1,4 +1,4 @@
-import { hasProperties } from "../utils";
+import { hasProperties } from "../src/utils";
 
 describe("hasProperties()", () => {
   it("should be true", () => {

@@ -6,5 +6,6 @@ const render = async (load: () => Promise<any>) => {
 };
 
 export const routes: Routes = [
-  { path: "/home", action: () => render(() => import("../client/pages/home")) },
+  { path: "/simple", action: () => render(() => import("../client/pages/simple")) },
+  { path: "/passing-state-as-props", action: () => render(() => import("../client/pages/passing-state-as-props")) },
 ];
