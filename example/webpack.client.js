@@ -1,5 +1,6 @@
 const path = require("path");
 const common = require("./webpack.config");
+const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
@@ -48,6 +49,9 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "[name].css",
       chunkFilename: "[id].css",
+    }),
+    new webpack.DefinePlugin({
+      IS_CLIENT: JSON.stringify(true),
     }),
   ],
   optimization: {

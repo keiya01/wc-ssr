@@ -58,8 +58,10 @@ customElements.define("add-button", AddButton);
 ```ts
 // client/AddButton/index.ts
 
-import "./element";
 export { template } from "./template";
+if (IS_CLIENT) {
+  import(/* webpackMode: "eager" */ "./element");
+}
 ```
 
 ```ts

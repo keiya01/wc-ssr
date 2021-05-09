@@ -12,8 +12,8 @@ module.exports = {
   },
   plugins: [
     ...common.plugins,
-    new webpack.IgnorePlugin({
-      resourceRegExp: /.\/element$/,
+    new webpack.DefinePlugin({
+      IS_CLIENT: JSON.stringify(false),
     }),
   ],
 };

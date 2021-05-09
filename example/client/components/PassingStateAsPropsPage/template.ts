@@ -6,13 +6,10 @@ type Props = {
   handleOnClick?: () => void;
 };
 
-export const template = ({
-  title,
-  handleOnClick,
-}: Props = {}) => html`
+export const template = ({ title, handleOnClick }: Props = {}) => html`
   <passing-state-as-props-page>
     <template shadowroot="open">
-        ${AddButton({ title: title || "hey", onClick: handleOnClick })}
+      ${AddButton({ title: title || "hey", onClick: handleOnClick })}
     </template>
   </passing-state-as-props-page>
 `;

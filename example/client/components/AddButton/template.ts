@@ -1,4 +1,3 @@
-import "./element";
 import { html, $props, $event } from "wc-ssr";
 
 type Props = {
