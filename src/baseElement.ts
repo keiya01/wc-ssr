@@ -326,8 +326,8 @@ export class BaseElement<
       `[data-${ATTRIBUTE_PROPS_NAME}]`
     );
     propsElementList.forEach((elm, i) => {
-      if(!isCustomElement(elm.tagName.toLowerCase())) {
-        throw new Error('You can not set props to normal element.')
+      if (!isCustomElement(elm.tagName.toLowerCase())) {
+        throw new Error("You can not set props to normal element.");
       }
       const propsObj = propsList[i];
       if (propsObj && propsObj.props && Object.keys(propsObj.props).length) {
