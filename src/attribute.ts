@@ -1,3 +1,5 @@
+import { hasProperties } from "./utils";
+
 export const ATTRIBUTE_EVENT = 1;
 export const ATTRIBUTE_PROPS = 2;
 
@@ -18,14 +20,6 @@ export type PropsObject = {
 };
 
 export type AttributeResult = EventObject | PropsObject;
-
-export const hasProperties = <T extends Record<string, unknown>>(
-  value: unknown,
-  keys: (keyof T)[]
-): value is T =>
-  typeof value === "object" &&
-  !!value &&
-  keys.every((key) => Object.prototype.hasOwnProperty.call(value, key));
 
 export const isEvent = (value: unknown): value is EventObject =>
   hasProperties<EventObject>(value, ["type", "eventName", "handler"]) &&

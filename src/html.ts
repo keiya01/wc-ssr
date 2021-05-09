@@ -1,4 +1,5 @@
 import { isEvent, isProps } from "./attribute";
+import { hasProperties } from "./utils";
 
 export type TemplateResult = {
   strings: TemplateStringsArray;
@@ -36,11 +37,7 @@ export const htmlToString = (result: TemplateResult): string => {
 };
 
 export const isTemplateResult = (obj: unknown): obj is TemplateResult => {
-  if (obj && typeof obj === "object") {
-    const hasProperty = Object.prototype.hasOwnProperty.bind(obj);
-    return hasProperty("strings") && hasProperty("values");
-  }
-  return false;
+  return hasProperties<TemplateResult>(obj, ["strings", "values"]);
 };
 
 // TODO: check draft
