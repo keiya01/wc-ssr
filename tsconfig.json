@@ -70,5 +70,11 @@
     "skipLibCheck": true /* Skip type checking of declaration files. */,
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
-  "exclude": ["node_modules", "dist", "example", "__tests__", "__browserTests__"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "example",
+    "__tests__",
+    "__browserTests__"
+  ]
 }
