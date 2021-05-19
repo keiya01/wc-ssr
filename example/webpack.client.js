@@ -33,6 +33,7 @@ module.exports = {
     path: path.resolve("dist/client"),
     filename: "[name].bundle.js",
     chunkFilename: "[name].[contenthash].bundle.js",
+    publicPath: "/dist/client/",
   },
   module: {
     ...common.module,

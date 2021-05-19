@@ -94,8 +94,9 @@ export class BaseElement<
   Props extends BaseProps = BaseProps,
   State extends BaseState = BaseState
 > extends HTMLElement {
-  private events: EventObject[] = [];
+  private events: EventObject<Event>[] = [];
   private __props: Props = {} as Props;
+  private initialized = false;
   public state: State = {} as State;
   public props: Props = {} as Props;
 
@@ -326,7 +327,7 @@ export class BaseElement<
       `[data-${ATTRIBUTE_PROPS_NAME}]`
     );
     propsElementList.forEach((elm, i) => {
-      if (!isCustomElement(elm.tagName.toLowerCase())) {
+      if (!isCustomElement(elm.tagName)) {
         throw new Error("You can not set props to normal element.");
       }
       const propsObj = propsList[i];
@@ -358,20 +359,42 @@ export class BaseElement<
      *  - The case where element is added
      *  - The case where element is removed
      */
-    morphdom(fromElement, toElement.innerHTML, {
-      onBeforeElUpdated: (_, to) => {
-        this.updateElement(fromElement.children[0], to);
-        return false;
+    morphdom(fromElement, toElement, {
+      onBeforeElUpdated: (from, to) => {
+        if (from.isEqualNode(to) || isCustomElement(from.tagName)) {
+          return false;
+        }
+        return true;
       },
+      childrenOnly: false,
     });
   }
 
+  init(): void {
+    if (this.initialized) {
+      return;
+    }
+    this.componentDidMount();
+    this.initialized = true;
+  }
+
   connectedCallback(): void {
-    setTimeout(() => {
-      this.props = (this as Record<string, unknown>).__props as Props;
-      this.updateProps();
-    }, 0);
+    const pageProps = ((window as unknown) as Record<string, unknown>)
+      .__PAGE_ELEMENT_PROPS__ as Props;
+    if (pageProps) {
+      this.props = pageProps;
+      ((window as unknown) as Record<
+        string,
+        unknown
+      >).__PAGE_ELEMENT_PROPS__ = null;
+    }
+
     this.updateProps();
+
+    // for server render
+    if (Object.keys(this.props).length) {
+      this.init();
+    }
   }
 
   disconnectedCallback(): void {
@@ -386,6 +409,9 @@ export class BaseElement<
     if (name === `${ATTRIBUTE_PROPS_NAME}-changed`) {
       this.props = this.__props;
       this.update();
+      this.componentDidMount();
+      // for client render
+      this.init();
       return;
     }
     this._$attributeToProperty(name, value);
@@ -407,7 +433,7 @@ export class BaseElement<
     this.events = [];
   }
 
-  setState(obj: State): void {
+  setState(obj: Partial<State>): void {
     this.state = {
       ...this.state,
       ...obj,
@@ -415,38 +441,10 @@ export class BaseElement<
     this.update();
   }
 
-  // simple hydration
-  updateElement(from: ChildNode, to: ChildNode): void {
-    let i = -1;
-    // NOTE: fromElement should be same structure with toElement.
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      i++;
-      const fromChild = from.childNodes[i];
-      if (!fromChild) {
-        return;
-      }
-      if (
-        fromChild.nodeType === document.ELEMENT_NODE &&
-        isCustomElement((fromChild as Element).tagName)
-      ) {
-        continue;
-      }
-      const toChild = to.childNodes[i];
-      if (!toChild) {
-        return;
-      }
-
-      // for textNode
-      if (toChild.nodeType === document.TEXT_NODE) {
-        fromChild.textContent = toChild.textContent;
-      } else {
-        this.updateElement(fromChild, toChild);
-      }
-    }
+  componentDidMount(): void {
+    // Call this method when props has been prepared.
   }
 
-  // TODO: DOMParser使うと良さそう: https://web.dev/declarative-shadow-dom/#parser-only
   render(): TemplateResult {
     return html``;
   }

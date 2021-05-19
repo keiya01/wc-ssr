@@ -15,4 +15,13 @@ export const routes: Routes = [
     action: () =>
       render(() => import("../client/pages/passing-state-as-props")),
   },
+  {
+    path: "/todos",
+    children: [
+      {
+        path: "/",
+        action: () => render(() => import("../client/pages/todo/index")),
+      },
+    ],
+  },
 ];

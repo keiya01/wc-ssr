@@ -21,7 +21,9 @@ const route = (app: App) => {
     const template = await router.resolve(req.url);
     reply.header("Content-Type", "text/html; charset=utf-8");
     reply.send(
-      html(htmlToString(template), { scripts: [getScriptFileName("/main")] })
+      html(htmlToString(template, { isPage: true }), {
+        scripts: [getScriptFileName("/main")],
+      })
     );
   });
 };

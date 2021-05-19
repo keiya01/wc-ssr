@@ -41,6 +41,30 @@ describe("htmlToString()", () => {
       `<custom-element><template shadowroot="open"><div><h1>Hello World</h1>${expectStringTemplateChild}</div></template></custom-element>`
     );
   });
+
+  it("should convert html array", () => {
+    const template = html`<custom-element
+      ><template shadowroot="open"
+        ><ul>
+          ${["abc", "def", "ghi"].map((text) => html`<li>${text}</li>`)}
+        </ul></template
+      ></custom-element
+    >`;
+    expect(htmlToString(template)).toBe(
+      `<custom-element><template shadowroot="open"><ul><li>abc</li><li>def</li><li>ghi</li></ul></template></custom-element>`
+    );
+  });
+
+  it("should convert string array", () => {
+    const template = html`<custom-element
+      ><template shadowroot="open"
+        ><span>${["abc", "def", "ghi"]}</span></template
+      ></custom-element
+    >`;
+    expect(htmlToString(template)).toBe(
+      `<custom-element><template shadowroot="open"><span>abcdefghi</span></template></custom-element>`
+    );
+  });
 });
 
 describe("isCustomElement()", () => {

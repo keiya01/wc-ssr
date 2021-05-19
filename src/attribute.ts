@@ -3,12 +3,13 @@ import { hasProperties } from "./utils";
 export const ATTRIBUTE_EVENT = 1;
 export const ATTRIBUTE_PROPS = 2;
 
-export type EventHandler = () => void;
+// TODO: fix unknown type
+export type EventHandler<E extends Event> = (ev?: E) => void;
 
-export type EventObject = {
+export type EventObject<E extends Event> = {
   type: typeof ATTRIBUTE_EVENT;
   eventName: string;
-  handler?: EventHandler;
+  handler?: EventHandler<E>;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,18 +20,20 @@ export type PropsObject = {
   props: BaseProps;
 };
 
-export type AttributeResult = EventObject | PropsObject;
+export type AttributeResult<E extends Event> = EventObject<E> | PropsObject;
 
-export const isEvent = (value: unknown): value is EventObject =>
-  hasProperties<EventObject>(value, ["type", "eventName", "handler"]) &&
+export const isEvent = <E extends Event>(
+  value: unknown
+): value is EventObject<E> =>
+  hasProperties<EventObject<E>>(value, ["type", "eventName", "handler"]) &&
   value.type === ATTRIBUTE_EVENT &&
   !!value.eventName;
 
 // TODO: イベントは`data-wc-ssr-event=EVENT_NUMBER`のようにマークをつけておいて後から`EVENT_NUMBER`のイベントをその要素に追加すれば良いのでは？
-export const $event = (
+export const $event = <E extends Event>(
   eventName: string,
-  handler?: EventHandler
-): AttributeResult => ({
+  handler?: EventHandler<E>
+): AttributeResult<E> => ({
   type: ATTRIBUTE_EVENT,
   eventName,
   handler,
@@ -41,9 +44,9 @@ export const isProps = (value: unknown): value is PropsObject =>
   value.type === ATTRIBUTE_PROPS &&
   !!value.props;
 
-export const $props = <Props extends BaseProps>(
+export const $props = <Props extends BaseProps, E extends Event>(
   props: Props
-): AttributeResult => ({
+): AttributeResult<E> => ({
   type: ATTRIBUTE_PROPS,
   props,
 });
