@@ -344,12 +344,19 @@ export class BaseElement<
     const fragment = parseShadowDOM(htmlToString(this.render()));
     const elm = fragment.body.getElementsByTagName(this.tagName)[0];
 
-    const fromElement = this.shadowRoot;
-    const toElement = elm.shadowRoot;
+    const fromElementChildren = this.shadowRoot?.children || [];
+    const toElementChildren = elm.shadowRoot?.children || [];
 
-    if (!fromElement || !toElement) {
+    if(fromElementChildren.length > 2 || toElementChildren.length > 2) {
+      throw new Error('Component can only take one root node.')
+    }
+
+    if(fromElementChildren.length === 0 || toElementChildren.length === 0) {
       return;
     }
+
+    const fromElement = fromElementChildren[fromElementChildren.length - 1];
+    const toElement = toElementChildren[toElementChildren.length - 1];
 
     this.resetEvents();
     this.updateProps();
@@ -366,7 +373,7 @@ export class BaseElement<
         }
         return true;
       },
-      childrenOnly: false,
+      childrenOnly: true,
     });
   }
 

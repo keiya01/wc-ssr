@@ -9,6 +9,17 @@ export type Props = {
   handleAddTodo?: () => void;
 };
 
+const style = html`
+  <style>
+    h1 {
+      color: blue;
+    }
+    .wrapper {
+      display: flex;
+    }
+  </style>
+`;
+
 /**
  * TODO
  * - client side rendering を行うTODOアプリを作ってみる
@@ -23,11 +34,17 @@ export const template = ({
 }: Props) => html`
   <todo-page ${$props({ todos })}>
     <template shadowroot="open">
-      <div>
+      ${style}
+      <div class="container">
         <h1>TODO</h1>
-        <ul>
-          ${todos.map((todo) => html`<li>${todo.text}</li>`)}
-        </ul>
+        <div class="wrapper">
+          <ul>
+            ${todos.map((todo) => html`<li>${todo.text}</li>`)}
+          </ul>
+          <ul>
+            ${todos.map((todo) => html`<li>${todo.text}</li>`)}
+          </ul>
+        </div>
         <input
           name="todo"
           ${$event("input", handleChangeTodo)}

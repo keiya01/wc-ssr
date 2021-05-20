@@ -123,6 +123,42 @@ See detail in [example](https://github.com/keiya01/wc-ssr/tree/master/example).
 
 ## Usage
 
+- [Styling](#Styling)
+- [Props](#Props)
+- [Event](#Event)
+- [State](#State)
+- [Attribute](#Attribute)
+- [Lifecycle](#Lifecycle)
+- [Hydration](#Hydration)
+- [Server Side Rendering](#Server-Side-Rendering)
+
+### Styling
+
+You can use css with style tag.  
+You can set style tag inside template tag.
+
+```ts
+import { html } from 'wc-ssr';
+import { BaseElement } from 'wc-ssr/client';
+
+const style = html`
+  <style>
+    button {
+      color: red;
+    }
+  </style>
+`;
+
+const CustomButton = html`
+  <custom-button>
+    <template>
+      ${style}
+      <button type="button">button</button>
+    </template>
+  </custom-button>
+`;
+```
+
 ### Props
 
 You can pass props to component. And you can get props to be injected from BaseElement class.
