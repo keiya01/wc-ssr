@@ -31,7 +31,7 @@ export const template = ({
         <input
           name="todo"
           ${$event("input", handleChangeTodo)}
-          value=${text || ""}
+          value="${text || ""}"
         />
         <button ${$event("click", handleAddTodo)}>add todo</button>
       </div>
