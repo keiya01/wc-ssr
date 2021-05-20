@@ -1,6 +1,6 @@
 # wc-ssr
 
-**NOTE: This library is not production ready.**
+**NOTE: This library is EXPERIMENTAL.**
 
 `wc-ssr` is a simple Server Side Rendering Library with `Web Components`.
 
@@ -53,7 +53,7 @@ export class AddButton extends BaseElement {
 customElements.define("add-button", AddButton);
 ```
 
-**NOTE: If you want to use SSR feature, you should remove `import './element'` like [this example](https://github.com/keiya01/wc-ssr/blob/master/example/babel.config.js#L10-L17).**
+**NOTE: When you use SSR feature, you should remove `import './element'` like [this example](https://github.com/keiya01/wc-ssr/blob/master/example/babel.config.js#L10-L17)**. This is because, `BaseElement` can not be invoked on the server.
 
 ```ts
 // client/AddButton/index.ts
@@ -125,15 +125,129 @@ See detail in [example](https://github.com/keiya01/wc-ssr/tree/master/example).
 
 ### Props
 
-_TODO_
+You can pass props to component. And you can get props to be injected from BaseElement class.
 
-### State
+```ts
+import { html } from 'wc-ssr';
+import { BaseElement } from 'wc-ssr/client';
 
-_TODO_
+const CustomElement = html`
+  <custom-element>
+    <template>
+      <h1>Hello World</h1>
+      ${PassProps({ text: 'This is paragraph' }) /* Pass props to PassProps component */}
+    </template>
+  </custom-element>
+`;
+
+class CustomElement extends BaseElement {
+  /* ... */
+}
+
+const PassProps = ({ text }) => html`
+  <pass-props ${$props({ text }) /* Pass props to pass-props element */}>
+    <template>
+      <p>${text}</p>
+    </template>
+  </pass-props>
+`;
+
+class PassProps extends BaseElement {
+  constructor() {
+    super();
+  }
+
+  render() {
+    return PassProps({ ...this.props });
+  }
+}
+```
 
 ### Event
 
-_TODO_
+You can add event to element by using `$event` method.
+
+```ts
+const EventElement = ({ handleOnClick }) => html`
+  <event-element>
+    <template>
+      <button type="button" ${$event('click', handleOnClick)}>click me</button>
+    </template>
+  </event-element>
+`;
+
+class EventElementClass extends BaseElement {
+  constructor() {
+    super();
+  }
+
+  handleOnClick = () => {
+    console.log('Clicked!!');
+  }
+
+  render() {
+    return EventElement({ handleOnClick: this.handleOnClick });
+  }
+}
+
+```
+
+### State
+
+You can define state like React. If you defined state and change it, `render()` is executed.
+
+```ts
+import { html } from 'wc-ssr';
+import { BaseElement } from 'wc-ssr/client';
+
+type Props = {
+  items: string[];
+  text: string;
+  handleOnChangeText: (e?: InputEvent) => void;
+  addItem: () => void;
+};
+
+const DefineState = ({ items, text, handleOnChangeText, addItem }) => html`
+  <define-state>
+    <template>
+      <ul>${items.map((item) => html`<li>${item}</li>`)}</ul>
+      <input type="text" value="${text || ''}" ${$event('input', handleOnChangeText)}>
+      <button type="button" ${$event('click', addItem)}>add item</button>
+    </template>
+  </define-state>
+`;
+
+class DefineState extends BaseElement {
+  constructor() {
+    super();
+    this.state = {
+      items: [],
+      text: [],
+    };
+  }
+
+  addItem = () => {
+    this.setState({ items: [...this.state.items, this.state.text] });
+  }
+
+  handleOnChangeText = (e?: InputEvent) => {
+    const target = e?.target as HTMLInputElement;
+    if (target) {
+      this.setState({ text: target.value });
+    }
+  }
+
+  render() {
+    return DefineState({
+      items: this.state.items,
+      text: this.state.text,
+      handleOnChangeText: this.handleOnChangeText,
+      addItem: this.addItem,
+    });
+  }
+}
+
+```
 
 ### Attribute
 
@@ -141,10 +255,30 @@ _TODO_
 
 ### Lifecycle
 
+You can use [web components lifecycle](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#using_the_lifecycle_callbacks) like below.
+
+```ts
+connectedCallback() {
+  super.connectedCallback();
+  console.log('connected!!');
+}
+```
+
+And you can use additional lifecycle.
+
+- `componentDidMount` ... This function is invoked when all preparation of `BaseElement` is completed.
+
+```ts
+componentDidMount() {
+  super.componentDidMount();
+  this.setState({ text: this.props.text });
+}
+```
+
 ### Hydration
 
-_TODO_
+Hydration is performed automatically by browser.
 
 ### Server Side Rendering
 
-_TODO_
+You can use `htmlToString` to render html on the server.

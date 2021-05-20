@@ -44,7 +44,6 @@ export class TodoPage extends BaseElement<Props, State> {
   };
 
   render() {
-    console.log("render: ", this.state, this.props);
     return template({
       todos: this.state.todos || [],
       text: this.state.todo.text,
