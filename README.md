@@ -138,8 +138,8 @@ You can use css with style tag.
 You can set style tag inside template tag.
 
 ```ts
-import { html } from 'wc-ssr';
-import { BaseElement } from 'wc-ssr/client';
+import { html } from "wc-ssr";
+import { BaseElement } from "wc-ssr/client";
 
 const style = html`
   <style>
@@ -164,14 +164,18 @@ const CustomButton = html`
 You can pass props to component. And you can get props to be injected from BaseElement class.
 
 ```ts
-import { html } from 'wc-ssr';
-import { BaseElement } from 'wc-ssr/client';
+import { html } from "wc-ssr";
+import { BaseElement } from "wc-ssr/client";
 
 const CustomElement = html`
   <custom-element>
     <template>
       <h1>Hello World</h1>
-      ${PassProps({ text: 'This is paragraph' }) /* Pass props to PassProps component */}
+      ${
+        PassProps({
+          text: "This is paragraph",
+        }) /* Pass props to PassProps component */
+      }
     </template>
   </custom-element>
 `;
@@ -207,7 +211,7 @@ You can add event to element by using `$event` method.
 const EventElement = ({ handleOnClick }) => html`
   <event-element>
     <template>
-      <button type="button" ${$event('click', handleOnClick)}>click me</button>
+      <button type="button" ${$event("click", handleOnClick)}>click me</button>
     </template>
   </event-element>
 `;
@@ -218,14 +222,13 @@ class EventElementClass extends BaseElement {
   }
 
   handleOnClick = () => {
-    console.log('Clicked!!');
-  }
+    console.log("Clicked!!");
+  };
 
   render() {
     return EventElement({ handleOnClick: this.handleOnClick });
   }
 }
-
 ```
 
 ### State
@@ -233,8 +236,8 @@ class EventElementClass extends BaseElement {
 You can define state like React. If you defined state and change it, `render()` is executed.
 
 ```ts
-import { html } from 'wc-ssr';
-import { BaseElement } from 'wc-ssr/client';
+import { html } from "wc-ssr";
+import { BaseElement } from "wc-ssr/client";
 
 type Props = {
   items: string[];
@@ -246,9 +249,15 @@ type Props = {
 const DefineState = ({ items, text, handleOnChangeText, addItem }) => html`
   <define-state>
     <template>
-      <ul>${items.map((item) => html`<li>${item}</li>`)}</ul>
-      <input type="text" value="${text || ''}" ${$event('input', handleOnChangeText)}>
-      <button type="button" ${$event('click', addItem)}>add item</button>
+      <ul>
+        ${items.map((item) => html`<li>${item}</li>`)}
+      </ul>
+      <input
+        type="text"
+        value="${text || ""}"
+        ${$event("input", handleOnChangeText)}
+      />
+      <button type="button" ${$event("click", addItem)}>add item</button>
     </template>
   </define-state>
 `;
@@ -264,14 +273,14 @@ class DefineState extends BaseElement {
 
   addItem = () => {
     this.setState({ items: [...this.state.items, this.state.text] });
-  }
+  };
 
   handleOnChangeText = (e?: InputEvent) => {
     const target = e?.target as HTMLInputElement;
     if (target) {
       this.setState({ text: target.value });
     }
-  }
+  };
 
   render() {
     return DefineState({
@@ -282,7 +291,6 @@ class DefineState extends BaseElement {
     });
   }
 }
-
 ```
 
 ### Attribute
