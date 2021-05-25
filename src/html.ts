@@ -39,6 +39,9 @@ export const htmlToString = (
     }
     if (Array.isArray(val)) {
       val = val.reduce((res, item) => {
+        if (!item) {
+          return res;
+        }
         if (isTemplateResult(item)) {
           res += htmlToString(item);
           return res;

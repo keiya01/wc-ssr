@@ -281,25 +281,39 @@ export class BaseElement<
     );
 
     const propsList = [] as PropsObject[];
-    html.values.map((val) => {
-      if (eventElementList.length !== 0 && isEvent(val) && val.handler) {
-        this.events.push(val);
-      }
-      if (isTemplateResult(val)) {
-        /**
-         * <custom-elm1>
-         *  <custom-elm2></custom-elm2> <- find this props. This element is included in html.values.
-         * </custom-elm1>
-         */
-        val.values.find((innerVal) => {
-          if (propsElementList.length !== 0 && isProps(innerVal)) {
-            propsList.push(innerVal);
-            return true;
+    const setHTMLValues = (_html: TemplateResult) =>
+      _html.values.map((val) => {
+        if (eventElementList.length !== 0 && isEvent(val) && val.handler) {
+          this.events.push(val);
+        }
+        if (isTemplateResult(val)) {
+          /**
+           * <custom-elm1>
+           *  <custom-elm2></custom-elm2> <- find this props. This element is included in html.values.
+           * </custom-elm1>
+           */
+          if (
+            !val.values.some((innerVal) => {
+              // If props is set, this element is custom element.
+              if (propsElementList.length !== 0 && isProps(innerVal)) {
+                propsList.push(innerVal);
+                return true;
+              }
+              return false;
+            })
+          ) {
+            setHTMLValues(val);
           }
-          return false;
-        });
-      }
-    });
+        }
+        if (Array.isArray(val)) {
+          val.map((item) => {
+            if (isTemplateResult(item)) {
+              setHTMLValues(item);
+            }
+          });
+        }
+      });
+    setHTMLValues(html);
     this.setEvent();
     this.setProps(propsList);
   }
@@ -340,6 +354,10 @@ export class BaseElement<
     });
   }
 
+  /**
+   * TODO
+   * - Improve performance
+   */
   update(): void {
     const fragment = parseShadowDOM(htmlToString(this.render()));
     const elm = fragment.body.getElementsByTagName(this.tagName)[0];
@@ -347,19 +365,19 @@ export class BaseElement<
     const fromElementChildren = this.shadowRoot?.children || [];
     const toElementChildren = elm.shadowRoot?.children || [];
 
-    if(fromElementChildren.length > 2 || toElementChildren.length > 2) {
-      throw new Error('Component can only take one root node.')
+    if (fromElementChildren.length > 2 || toElementChildren.length > 2) {
+      throw new Error("Component can only take one root node.");
     }
 
-    if(fromElementChildren.length === 0 || toElementChildren.length === 0) {
+    if (fromElementChildren.length === 0 || toElementChildren.length === 0) {
       return;
     }
 
     const fromElement = fromElementChildren[fromElementChildren.length - 1];
     const toElement = toElementChildren[toElementChildren.length - 1];
 
+    // Reset event before DOM is updated.
     this.resetEvents();
-    this.updateProps();
 
     /**
      * TODO
@@ -375,6 +393,10 @@ export class BaseElement<
       },
       childrenOnly: true,
     });
+
+    // After state is updated, update event.
+    // Because event is not registered correct even if update event before DOM is updated.
+    this.updateProps();
   }
 
   init(): void {
