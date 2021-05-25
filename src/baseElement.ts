@@ -103,14 +103,9 @@ export class BaseElement<
   constructor() {
     super();
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const internals = this.attachInternals();
-    const shadow = internals.shadowRoot as ShadowRoot;
-    if (!shadow) {
-      throw new Error(
-        "Declarative Shadow DOM is not supported in your browser."
-      );
+    // TODO: support polyfill
+    if (!this.shadowRoot) {
+      console.warn("Declarative Shadow DOM is not supported in your browser.");
     }
   }
 
