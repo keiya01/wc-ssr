@@ -1,11 +1,11 @@
 import { template, Todo } from "../../components/TodoPage";
 
 export const todos: Todo[] = [
-  { text: "todo1", isChecked: false },
-  { text: "todo2", isChecked: false },
-  { text: "todo3", isChecked: true },
-  { text: "todo4", isChecked: false },
-  { text: "todo5", isChecked: true },
+  { id: 0, text: "todo1", isChecked: false },
+  { id: 1, text: "todo2", isChecked: false },
+  { id: 2, text: "todo3", isChecked: true },
+  { id: 3, text: "todo4", isChecked: false },
+  { id: 4, text: "todo5", isChecked: true },
 ];
 
 export const getServerSideProps = async () => {

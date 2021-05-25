@@ -6,10 +6,13 @@ type State = {
   todo: Todo;
 };
 
+let todoID = 0;
+
 export class TodoPage extends BaseElement<Props, State> {
   state = {
-    todos: [],
+    todos: [] as Todo[],
     todo: {
+      id: 0,
       text: "",
       isChecked: false,
     },
@@ -26,13 +29,18 @@ export class TodoPage extends BaseElement<Props, State> {
   }
 
   componentDidMount() {
-    this.setState({ todos: this.props.todos });
+    todoID = this.props.todos.slice(-1)[0].id + 1;
+    this.setState({
+      todos: this.props.todos,
+      todo: { ...this.state.todo, id: todoID },
+    });
   }
 
   handleAddTodo = () => {
+    todoID++;
     this.setState({
       todos: [...this.state.todos, this.state.todo],
-      todo: { text: "", isChecked: false },
+      todo: { id: todoID, text: "", isChecked: false },
     });
   };
 
@@ -43,12 +51,22 @@ export class TodoPage extends BaseElement<Props, State> {
     }
   };
 
+  handleToggleCheck = (id: number) => () => {
+    this.setState({
+      todos: this.state.todos.map((todo) => ({
+        ...todo,
+        isChecked: id === todo.id ? !todo.isChecked : todo.isChecked,
+      })),
+    });
+  };
+
   render() {
     return template({
       todos: this.state.todos || [],
       text: this.state.todo.text,
       handleAddTodo: this.handleAddTodo,
       handleChangeTodo: this.handleChangeTodo,
+      handleToggleCheck: this.handleToggleCheck,
     });
   }
 }

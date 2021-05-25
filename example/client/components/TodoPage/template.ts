@@ -1,12 +1,13 @@
 import { $event, $props, html } from "wc-ssr";
 
-export type Todo = { text: string; isChecked: boolean };
+export type Todo = { id: number; text: string; isChecked: boolean };
 
 export type Props = {
   todos: Todo[];
   text?: string;
   handleChangeTodo?: (ev?: InputEvent) => void;
   handleAddTodo?: () => void;
+  handleToggleCheck?: (id: number) => () => void;
 };
 
 const style = html`
@@ -31,6 +32,7 @@ export const template = ({
   text,
   handleChangeTodo,
   handleAddTodo,
+  handleToggleCheck,
 }: Props) => html`
   <todo-page ${$props({ todos })}>
     <template shadowroot="open">
@@ -39,10 +41,22 @@ export const template = ({
         <h1>TODO</h1>
         <div class="wrapper">
           <ul>
-            ${todos.map((todo) => html`<li>${todo.text}</li>`)}
+            ${todos.map((todo) =>
+              !todo.isChecked
+                ? html`<li ${$event("click", handleToggleCheck?.(todo.id))}>
+                    ${todo.text}
+                  </li>`
+                : null
+            )}
           </ul>
           <ul>
-            ${todos.map((todo) => html`<li>${todo.text}</li>`)}
+            ${todos.map((todo) =>
+              todo.isChecked
+                ? html`<li ${$event("click", handleToggleCheck?.(todo.id))}>
+                    ${todo.text}
+                  </li>`
+                : null
+            )}
           </ul>
         </div>
         <input
