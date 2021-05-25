@@ -43,24 +43,24 @@ describe("htmlToString()", () => {
   });
 
   it("should convert html array", () => {
-    const template = html`<custom-element
-      ><template shadowroot="open"
-        ><ul>
-          ${["abc", "def", "ghi"].map((text) => html`<li>${text}</li>`)}
-        </ul></template
-      ></custom-element
-    >`;
+    // prettier-ignore
+    const template = html`<custom-element><template shadowroot="open"><ul>${["abc", "def", "ghi"].map((text) => html`<li>${text}</li>`)}</ul></template></custom-element>`;
     expect(htmlToString(template)).toBe(
       `<custom-element><template shadowroot="open"><ul><li>abc</li><li>def</li><li>ghi</li></ul></template></custom-element>`
     );
   });
 
   it("should convert string array", () => {
-    const template = html`<custom-element
-      ><template shadowroot="open"
-        ><span>${["abc", "def", "ghi"]}</span></template
-      ></custom-element
-    >`;
+    // prettier-ignore
+    const template = html`<custom-element><template shadowroot="open"><span>${["abc", "def", "ghi"]}</span></template></custom-element>`;
+    expect(htmlToString(template)).toBe(
+      `<custom-element><template shadowroot="open"><span>abcdefghi</span></template></custom-element>`
+    );
+  });
+
+  it("should be filtered null in array", () => {
+    // prettier-ignore
+    const template = html`<custom-element><template shadowroot="open"><span>${["abc", "def", null, "ghi"]}</span></template></custom-element>`;
     expect(htmlToString(template)).toBe(
       `<custom-element><template shadowroot="open"><span>abcdefghi</span></template></custom-element>`
     );
