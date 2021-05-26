@@ -2,11 +2,21 @@
   "name": "wc-ssr",
   "version": "0.0.1",
   "description": "SSR with web components",
-  "module": "dist/main.js",
-  "types": "dist/main.d.ts",
   "repository": "git@github.com:keiya01/wc-ssr.git",
   "author": "keiya01 <keiya.s.0210@gmail.com>",
   "license": "MIT",
+  "module": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "files": ["dist"],
+  "exports": {
+    ".": "./dist/main.js",
+    "./client": "./dist/client.js"
+  },
+  "typesVersions": {
+    "*": {
+      "client": ["./dist/client.d.ts"]
+    }
+  },
   "scripts": {
     "type-declaration": "tsc --emitDeclarationOnly",
     "build:common": "esbuild src/main.ts src/client.ts --bundle --format=esm --outdir=dist",
