@@ -29,7 +29,6 @@ export const isEvent = <E extends Event>(
   value.type === ATTRIBUTE_EVENT &&
   !!value.eventName;
 
-// TODO: イベントは`data-wc-ssr-event=EVENT_NUMBER`のようにマークをつけておいて後から`EVENT_NUMBER`のイベントをその要素に追加すれば良いのでは？
 export const $event = <E extends Event>(
   eventName: string,
   handler?: EventHandler<E>
