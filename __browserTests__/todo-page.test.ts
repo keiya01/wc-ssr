@@ -136,7 +136,4 @@ describe("todo page", () => {
 
     testCheckedTodos();
   });
-
-  it.todo("should be removed");
-  it.todo("should be moved");
 });
