@@ -90,6 +90,10 @@ const parseShadowDOM = (html: string) => {
 
 export type BaseState = Record<PropertyKey, unknown>;
 
+// TODO: support tree shaking
+const getTemplate = (elm: Element) =>
+  elm.querySelector<HTMLTemplateElement>("template[shadowRoot]");
+
 export class BaseElement<
   Props extends BaseProps = BaseProps,
   State extends BaseState = BaseState
@@ -97,15 +101,30 @@ export class BaseElement<
   private events: EventObject<Event>[] = [];
   private __props: Props = {} as Props;
   private initialized = false;
+  private isSupported = true;
   public state: State = {} as State;
   public props: Props = {} as Props;
 
   constructor() {
     super();
 
-    // TODO: support polyfill
+    // polyfill
     if (!this.shadowRoot) {
-      console.warn("Declarative Shadow DOM is not supported in your browser.");
+      const template = getTemplate(this);
+      if (!template) {
+        return;
+      }
+
+      const mode = template.getAttribute("shadowroot") as ShadowRootMode | null;
+      if (!mode) {
+        return;
+      }
+
+      const shadowRoot = this.attachShadow({ mode });
+      shadowRoot.appendChild(template.content);
+      template.remove();
+
+      this.isSupported = false;
     }
   }
 
@@ -242,6 +261,19 @@ export class BaseElement<
     }
   }
 
+  getTargetElement(elm: Element): Element[] {
+    if (this.isSupported) {
+      return Array.from(elm.shadowRoot?.children || []);
+    }
+    const template = getTemplate(elm);
+    if (!template) {
+      return [] as Element[];
+    }
+    elm.appendChild(template.content);
+    template.remove();
+    return Array.from(elm.children);
+  }
+
   _$attributeToProperty(name: string, value: string | null): void {
     const ctor = this.constructor as typeof BaseElement;
     // Note, hint this as an `AttributeMap` so closure clearly understands
@@ -263,15 +295,19 @@ export class BaseElement<
   updateProps(): void {
     const html = this.render();
     const fragment = parseShadowDOM(htmlToString(html));
+    // TODO: support multiple custom element
     const elm = fragment.body.getElementsByTagName(this.tagName)[0];
-
-    if (!elm.shadowRoot) {
+    const target = this.isSupported
+      ? elm.shadowRoot
+      : this.getTargetElement(elm).slice(-1)[0];
+    if (!target) {
       return;
     }
-    const eventElementList = elm.shadowRoot.querySelectorAll(
+
+    const eventElementList = target.querySelectorAll(
       `[data-${ATTRIBUTE_EVENT_NAME}]`
     );
-    const propsElementList = elm.shadowRoot.querySelectorAll(
+    const propsElementList = target.querySelectorAll(
       `[data-${ATTRIBUTE_PROPS_NAME}]`
     );
 
@@ -309,6 +345,7 @@ export class BaseElement<
         }
       });
     setHTMLValues(html);
+
     this.setEvent();
     this.setProps(propsList);
   }
@@ -358,7 +395,7 @@ export class BaseElement<
     const elm = fragment.body.getElementsByTagName(this.tagName)[0];
 
     const fromElementChildren = this.shadowRoot?.children || [];
-    const toElementChildren = elm.shadowRoot?.children || [];
+    const toElementChildren = this.getTargetElement(elm);
 
     if (fromElementChildren.length > 2 || toElementChildren.length > 2) {
       throw new Error("Component can only take one root node.");
