@@ -1,9 +1,12 @@
-import { $event, $props, html } from "wc-ssr";
+import { $event, $props, html, TemplateResult } from "wc-ssr";
+import { TodoList } from "./components/TodoList";
 
 export type Todo = { id: number; text: string; isChecked: boolean };
 
 export type Props = {
   todos: Todo[];
+  checkedTodos: Todo[];
+  nonCheckedTodos: Todo[];
   text?: string;
   handleChangeTodo?: (ev?: InputEvent) => void;
   handleAddTodo?: () => void;
@@ -18,6 +21,9 @@ const style = html`
     .wrapper {
       display: flex;
     }
+    li {
+      cursor: pointer;
+    }
   </style>
 `;
 
@@ -29,35 +35,21 @@ const style = html`
  */
 export const template = ({
   todos,
+  checkedTodos,
+  nonCheckedTodos,
   text,
   handleChangeTodo,
   handleAddTodo,
   handleToggleCheck,
-}: Props) => html`
-  <todo-page ${$props({ todos })}>
+}: Props): TemplateResult => html`
+  <todo-page ${$props({ todos, checkedTodos, nonCheckedTodos })}>
     <template shadowroot="open">
       ${style}
       <div class="container">
         <h1>TODO</h1>
         <div class="wrapper">
-          <ul>
-            ${todos.map((todo) =>
-              !todo.isChecked
-                ? html`<li ${$event("click", handleToggleCheck?.(todo.id))}>
-                    ${todo.text}
-                  </li>`
-                : null
-            )}
-          </ul>
-          <ul>
-            ${todos.map((todo) =>
-              todo.isChecked
-                ? html`<li ${$event("click", handleToggleCheck?.(todo.id))}>
-                    ${todo.text}
-                  </li>`
-                : null
-            )}
-          </ul>
+          ${TodoList({ todos: nonCheckedTodos, handleToggleCheck })}
+          ${TodoList({ todos: checkedTodos, handleToggleCheck })}
         </div>
         <input
           name="todo"

@@ -3,6 +3,8 @@ import { template, Props, Todo } from "./template";
 
 type State = {
   todos: Todo[];
+  checkedTodos: Todo[];
+  nonCheckedTodos: Todo[];
   todo: Todo;
 };
 
@@ -11,6 +13,8 @@ let todoID = 0;
 export class TodoPage extends BaseElement<Props, State> {
   state = {
     todos: [] as Todo[],
+    checkedTodos: [] as Todo[],
+    nonCheckedTodos: [] as Todo[],
     todo: {
       id: 0,
       text: "",
@@ -25,6 +29,9 @@ export class TodoPage extends BaseElement<Props, State> {
   static get properties() {
     return {
       todos: { attribute: false },
+      checkedTodos: { attribute: false },
+      nonCheckedTodos: { attribute: false },
+      todo: { attribute: false },
     };
   }
 
@@ -32,6 +39,8 @@ export class TodoPage extends BaseElement<Props, State> {
     todoID = this.props.todos.slice(-1)[0].id + 1;
     this.setState({
       todos: this.props.todos,
+      checkedTodos: this.props.checkedTodos,
+      nonCheckedTodos: this.props.nonCheckedTodos,
       todo: { ...this.state.todo, id: todoID },
     });
   }
@@ -40,6 +49,7 @@ export class TodoPage extends BaseElement<Props, State> {
     todoID++;
     this.setState({
       todos: [...this.state.todos, this.state.todo],
+      nonCheckedTodos: [...this.state.nonCheckedTodos, this.state.todo],
       todo: { id: todoID, text: "", isChecked: false },
     });
   };
@@ -52,17 +62,23 @@ export class TodoPage extends BaseElement<Props, State> {
   };
 
   handleToggleCheck = (id: number) => () => {
+    const nextTodos = this.state.todos.map((todo) =>
+      todo.id === id ? { ...todo, isChecked: !todo.isChecked } : todo
+    );
+    const nonCheckedTodos = nextTodos.filter((todo) => !todo.isChecked);
+    const checkedTodos = nextTodos.filter((todo) => todo.isChecked);
     this.setState({
-      todos: this.state.todos.map((todo) => ({
-        ...todo,
-        isChecked: id === todo.id ? !todo.isChecked : todo.isChecked,
-      })),
+      todos: nextTodos,
+      nonCheckedTodos,
+      checkedTodos,
     });
   };
 
   render() {
     return template({
       todos: this.state.todos || [],
+      nonCheckedTodos: this.state.nonCheckedTodos || [],
+      checkedTodos: this.state.checkedTodos || [],
       text: this.state.todo.text,
       handleAddTodo: this.handleAddTodo,
       handleChangeTodo: this.handleChangeTodo,

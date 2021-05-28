@@ -8,6 +8,9 @@ export const todos: Todo[] = [
   { id: 4, text: "todo5", isChecked: true },
 ];
 
+const checkedTodos = todos.filter((todo) => todo.isChecked);
+const nonCheckedTodos = todos.filter((todo) => !todo.isChecked);
+
 export const getServerSideProps = async () => {
-  return template({ todos });
+  return template({ todos, checkedTodos, nonCheckedTodos });
 };
