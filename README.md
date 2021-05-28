@@ -4,6 +4,18 @@
 
 `wc-ssr` is a simple Server Side Rendering Library with `Web Components`.
 
+## Installation
+
+```sh
+npm install wc-ssr
+```
+
+**or**
+
+```sh
+yarn add wc-ssr
+```
+
 ## Example
 
 ```ts
