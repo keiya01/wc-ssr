@@ -6,9 +6,9 @@
   "author": "keiya01 <keiya.s.0210@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/keiya01/react-performance-testing/issues"
+    "url": "https://github.com/keiya01/wc-ssr/issues"
   },
-  "homepage": "https://github.com/keiya01/react-performance-testing#readme",
+  "homepage": "https://github.com/keiya01/wc-ssr#readme",
   "module": "dist/main.js",
   "keywords": [
     "html",
