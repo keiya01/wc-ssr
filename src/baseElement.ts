@@ -94,6 +94,7 @@ export type BaseState = Record<PropertyKey, unknown>;
 const getTemplate = (elm: Element) =>
   elm.querySelector<HTMLTemplateElement>("template[shadowRoot]");
 
+// TODO: support computed state that is invoked when this.state is updated.
 export class BaseElement<
   Props extends BaseProps = BaseProps,
   State extends BaseState = BaseState
