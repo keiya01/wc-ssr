@@ -65,7 +65,7 @@ export class AddButton extends BaseElement {
 customElements.define("add-button", AddButton);
 ```
 
-**NOTE: When you use SSR feature, you should remove `import './element'` like [this example](https://github.com/keiya01/wc-ssr/blob/master/example/babel.config.js#L10-L17)**. This is because, `BaseElement` can not be invoked on the server.
+**NOTE: When you use SSR feature, you can not load `BaseElement`. You should use `BaseElement` like [this example](https://github.com/keiya01/wc-ssr/blob/master/example/babel.config.js#L10-L17)**. This is because, `BaseElement` inherit `HTMLElement`.
 
 ```ts
 // client/AddButton/index.ts
@@ -92,6 +92,8 @@ export const renderPage = () => html`
 ```
 
 ```ts
+// server.ts
+
 import fastify, { FastifyInstance } from "fastify";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import { htmlToString } from "wc-ssr";
@@ -151,7 +153,6 @@ You can set style tag inside template tag.
 
 ```ts
 import { html } from "wc-ssr";
-import { BaseElement } from "wc-ssr/client";
 
 const style = html`
   <style>
@@ -338,3 +339,21 @@ Hydration is performed automatically by browser.
 ### Server Side Rendering
 
 You can use `htmlToString` to render html on the server.
+
+```ts
+import { htmlToString, html } from "wc-ssr";
+
+type Props = {
+  text: string;
+};
+
+const render = ({ text }: Props) => html`
+  <custom-element>
+    <template>
+      <h1>${text}</h1>
+    </template>
+  </custom-element>
+`;
+
+htmlToString(render({ text: "Hello World" }));
+```
