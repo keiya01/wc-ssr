@@ -121,7 +121,9 @@ export class BaseElement<
         return;
       }
 
-      const shadowRoot = this.attachShadow({ mode });
+      const delegatesFocus = template.hasAttribute("shadowrootdelegatesfocus");
+
+      const shadowRoot = this.attachShadow({ mode, delegatesFocus });
       shadowRoot.appendChild(template.content);
       template.remove();
 
