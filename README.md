@@ -65,7 +65,7 @@ export class AddButton extends BaseElement {
 customElements.define("add-button", AddButton);
 ```
 
-**NOTE: When you use SSR feature, you can not load `BaseElement`. You should use `BaseElement` like [this example](https://github.com/keiya01/wc-ssr/blob/master/example/babel.config.js#L10-L17)**. This is because, `BaseElement` inherit `HTMLElement`.
+**NOTE: When you use SSR feature, you can not load `BaseElement` on the server. You should avoid loading `BaseElement` like [this example](https://github.com/keiya01/wc-ssr/blob/master/example/babel.config.js#L10-L17)**. This is because, `BaseElement` inherit `HTMLElement`.
 
 ```ts
 // client/AddButton/index.ts
