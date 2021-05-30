@@ -23,6 +23,7 @@ import {
   isProps,
   PropsObject,
 } from "./attribute";
+import { attachTemplate, supportsDeclarativeShadowDOM } from "./polyfill";
 
 type PropertyDeclarationMap = Map<PropertyKey, PropertyDeclaration>;
 type AttributeMap = Map<string, PropertyKey>;
@@ -90,10 +91,6 @@ const parseShadowDOM = (html: string) => {
 
 export type BaseState = Record<PropertyKey, unknown>;
 
-// TODO: support tree shaking
-const getTemplate = (elm: Element) =>
-  elm.querySelector<HTMLTemplateElement>("template[shadowRoot]");
-
 // TODO: support computed state that is invoked when this.state is updated.
 export class BaseElement<
   Props extends BaseProps = BaseProps,
@@ -102,7 +99,6 @@ export class BaseElement<
   private events: EventObject<Event>[] = [];
   private __props: Props = {} as Props;
   private initialized = false;
-  private isSupported = true;
   public state: State = {} as State;
   public props: Props = {} as Props;
 
@@ -111,23 +107,8 @@ export class BaseElement<
 
     // polyfill
     if (!this.shadowRoot) {
-      const template = getTemplate(this);
-      if (!template) {
-        return;
-      }
-
-      const mode = template.getAttribute("shadowroot") as ShadowRootMode | null;
-      if (!mode) {
-        return;
-      }
-
-      const delegatesFocus = template.hasAttribute("shadowrootdelegatesfocus");
-
-      const shadowRoot = this.attachShadow({ mode, delegatesFocus });
-      shadowRoot.appendChild(template.content);
-      template.remove();
-
-      this.isSupported = false;
+      // TODO: should tree shaking
+      attachTemplate(this);
     }
   }
 
@@ -228,7 +209,7 @@ export class BaseElement<
 
   static get observedAttributes(): string[] {
     this.finalize();
-    const attributes: string[] = [`${ATTRIBUTE_PROPS_NAME}-changed`];
+    const attributes: string[] = [ATTRIBUTE_PROPS_NAME];
     if (!this.elementProperties) {
       return [];
     }
@@ -265,15 +246,11 @@ export class BaseElement<
   }
 
   getTargetElement(elm: Element): Element[] {
-    if (this.isSupported) {
+    if (supportsDeclarativeShadowDOM()) {
       return Array.from(elm.shadowRoot?.children || []);
     }
-    const template = getTemplate(elm);
-    if (!template) {
-      return [] as Element[];
-    }
-    elm.appendChild(template.content);
-    template.remove();
+    // TODO: should tree shaking
+    attachTemplate(elm, { shouldSetShadow: false });
     return Array.from(elm.children);
   }
 
@@ -300,25 +277,37 @@ export class BaseElement<
     const fragment = parseShadowDOM(htmlToString(html));
     // TODO: support multiple custom element
     const elm = fragment.body.getElementsByTagName(this.tagName)[0];
-    const target = this.isSupported
+    const isSupportedDeclarativeShadowDOM = supportsDeclarativeShadowDOM();
+    const target = isSupportedDeclarativeShadowDOM
       ? elm.shadowRoot
       : this.getTargetElement(elm).slice(-1)[0];
     if (!target) {
       return;
     }
 
-    const eventElementList = target.querySelectorAll(
-      `[data-${ATTRIBUTE_EVENT_NAME}]`
-    );
-    const propsElementList = target.querySelectorAll(
-      `[data-${ATTRIBUTE_PROPS_NAME}]`
-    );
+    const eventElementList = Array.from(target.querySelectorAll(
+      `[${ATTRIBUTE_EVENT_NAME}]`
+    ));
+    const propsElementList = Array.from(target.querySelectorAll(
+      `[${ATTRIBUTE_PROPS_NAME}]`
+    ));
+
+    // for polyfill
+    if(!isSupportedDeclarativeShadowDOM && !(target instanceof ShadowRoot)) {
+      if(target.hasAttribute(ATTRIBUTE_EVENT_NAME)) {
+        eventElementList.push(target);
+      }
+      if(target.hasAttribute(ATTRIBUTE_PROPS_NAME)) {
+        propsElementList.push(target);
+      }
+    }
 
     const propsList = [] as PropsObject[];
     const setHTMLValues = (_html: TemplateResult) =>
       _html.values.map((val) => {
         if (eventElementList.length !== 0 && isEvent(val) && val.handler) {
           this.events.push(val);
+          return;
         }
         if (isTemplateResult(val)) {
           /**
@@ -337,6 +326,7 @@ export class BaseElement<
             })
           ) {
             setHTMLValues(val);
+            return;
           }
         }
         if (Array.isArray(val)) {
@@ -345,10 +335,10 @@ export class BaseElement<
               setHTMLValues(item);
             }
           });
+          return;
         }
       });
     setHTMLValues(html);
-
     this.setEvent();
     this.setProps(propsList);
   }
@@ -358,7 +348,7 @@ export class BaseElement<
       return;
     }
     const eventElementList = this.shadowRoot.querySelectorAll(
-      `[data-${ATTRIBUTE_EVENT_NAME}]`
+      `[${ATTRIBUTE_EVENT_NAME}]`
     );
     eventElementList.forEach((elm, i) => {
       const event = this.events[i];
@@ -373,7 +363,7 @@ export class BaseElement<
       return;
     }
     const propsElementList = this.shadowRoot.querySelectorAll(
-      `[data-${ATTRIBUTE_PROPS_NAME}]`
+      `[${ATTRIBUTE_PROPS_NAME}]`
     );
     propsElementList.forEach((elm, i) => {
       if (!isCustomElement(elm.tagName)) {
@@ -383,7 +373,7 @@ export class BaseElement<
       if (propsObj && propsObj.props && Object.keys(propsObj.props).length) {
         if (!shallowequal((elm as BaseElement).__props, propsObj.props)) {
           (elm as BaseElement).__props = propsObj.props;
-          elm.setAttribute(`${ATTRIBUTE_PROPS_NAME}-changed`, "true");
+          elm.setAttribute(ATTRIBUTE_PROPS_NAME, "true");
         }
       }
     });
@@ -405,7 +395,7 @@ export class BaseElement<
     }
 
     if (fromElementChildren.length === 0 || toElementChildren.length === 0) {
-      return;
+      throw new Error("ShadowRoot could not found.");
     }
 
     const fromElement = fromElementChildren[fromElementChildren.length - 1];
@@ -470,7 +460,7 @@ export class BaseElement<
     _old: string | null,
     value: string | null
   ): void {
-    if (name === `${ATTRIBUTE_PROPS_NAME}-changed`) {
+    if (name === ATTRIBUTE_PROPS_NAME) {
       this.props = this.__props;
       this.update();
       this.componentDidMount();
@@ -486,7 +476,7 @@ export class BaseElement<
       return;
     }
     const eventElementList = this.shadowRoot.querySelectorAll(
-      `[data-${ATTRIBUTE_EVENT_NAME}]`
+      `[${ATTRIBUTE_EVENT_NAME}]`
     );
     eventElementList.forEach((elm, i) => {
       const event = this.events[i];

@@ -13,7 +13,7 @@ export const html = (
   return { strings, values };
 };
 
-export const ATTRIBUTE_NAME = "wc-ssr";
+export const ATTRIBUTE_NAME = "private-wc-ssr";
 export const ATTRIBUTE_EVENT_NAME = `${ATTRIBUTE_NAME}-event`;
 export const ATTRIBUTE_PROPS_NAME = `${ATTRIBUTE_NAME}-props`;
 
@@ -29,13 +29,13 @@ export const htmlToString = (
       val = htmlToString(val);
     }
     if (isEvent(val)) {
-      val = `data-${ATTRIBUTE_EVENT_NAME}="true"`;
+      val = `${ATTRIBUTE_EVENT_NAME}="true"`;
     }
     if (isProps(val)) {
       if (options?.isPage) {
         windowProps = val.props;
       }
-      val = `data-${ATTRIBUTE_PROPS_NAME}="true"`;
+      val = `${ATTRIBUTE_PROPS_NAME}="true"`;
     }
     if (Array.isArray(val)) {
       val = val.reduce((res, item) => {
