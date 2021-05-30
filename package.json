@@ -48,7 +48,10 @@
     "prepublish": "run-s fix type build",
     "test": "run-p test:unit test:browser",
     "test:unit": "jest __tests__",
-    "test:browser": "jest __browserTests__"
+    "test:browser": "run-p test:browser:firefox test:browser:chrome",
+    "test:browser:common": "jest -i __browserTests__",
+    "test:browser:firefox": "PUPPETEER_PRODUCT=firefox yarn test:browser:common",
+    "test:browser:chrome": "PUPPETEER_PRODUCT=chrome yarn test:browser:common"
   },
   "dependencies": {
     "morphdom": "^2.6.1",

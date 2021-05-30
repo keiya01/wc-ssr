@@ -1,3 +1,5 @@
+import { IS_FIREFOX, waitForShadowRoot } from "./browserUtils";
+
 const todos = [
   { text: "todo1", isChecked: false },
   { text: "todo2", isChecked: false },
@@ -7,11 +9,10 @@ const todos = [
 ];
 
 describe("todo page", () => {
-  beforeEach(async () => {
-    await page.goto("http://localhost:3000/todos/");
-  });
-
   it("should be added", async () => {
+    const page = await browser.newPage();
+    await page.goto("http://localhost:3000/todos/");
+
     const changeInput = async () => {
       await page.evaluate(() => {
         const todoPage = document.querySelector("todo-page")?.shadowRoot;
@@ -34,6 +35,10 @@ describe("todo page", () => {
           'input[name="todo"]'
         ) as HTMLInputElement)?.value;
       });
+
+    if(IS_FIREFOX) {
+      await waitForShadowRoot(page, "todo-page");
+    }
 
     expect(await getInputValue()).toBe("");
     await changeInput();
@@ -67,9 +72,14 @@ describe("todo page", () => {
       expect(checkedTodosContentList[i]).toBe(todo.text)
     );
     expect(todosContentList.slice(-1)[0]).toBe("hello");
+
+    await page.close();
   });
 
   it("should be checked", async () => {
+    const page = await browser.newPage();
+    await page.goto("http://localhost:3000/todos/");
+
     const changeInput = async () => {
       await page.evaluate(() => {
         const todoPage = document.querySelector("todo-page")?.shadowRoot;
@@ -102,6 +112,10 @@ describe("todo page", () => {
         ];
       });
 
+    if(IS_FIREFOX) {
+      await waitForShadowRoot(page, "todo-page");
+    }
+
     await changeInput();
     await clickAddButton();
 
@@ -124,7 +138,7 @@ describe("todo page", () => {
       expect(checkedTodosContentList.slice(-1)[0]).toBe("hello");
     };
 
-    testCheckedTodos();
+    await testCheckedTodos();
 
     await page.evaluate(() => {
       const todoPage = document.querySelector("todo-page")?.shadowRoot;
@@ -134,6 +148,8 @@ describe("todo page", () => {
 
     todos[2].isChecked = false;
 
-    testCheckedTodos();
+    await testCheckedTodos();
+
+    await page.close();
   });
 });
