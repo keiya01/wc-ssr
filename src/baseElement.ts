@@ -91,6 +91,7 @@ const parseShadowDOM = (html: string) => {
 
 export type BaseState = Record<PropertyKey, unknown>;
 
+// TODO: support <slot> SSR.
 // TODO: support computed state that is invoked when this.state is updated.
 export class BaseElement<
   Props extends BaseProps = BaseProps,
