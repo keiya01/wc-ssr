@@ -4,7 +4,6 @@ import {
   ATTRIBUTE_PROPS_NAME,
   html,
   htmlToString,
-  isCustomElement,
 } from "../src/html";
 
 describe("htmlToString()", () => {
@@ -64,27 +63,5 @@ describe("htmlToString()", () => {
     expect(htmlToString(template)).toBe(
       `<custom-element><template shadowroot="open"><span>abcdefghi</span></template></custom-element>`
     );
-  });
-});
-
-describe("isCustomElement()", () => {
-  it("should be true when it is custom element", () => {
-    expect(isCustomElement("custom-element")).toBeTruthy();
-  });
-
-  it("should be true when it is custom element", () => {
-    expect(isCustomElement("custom-element_child-element.test")).toBeTruthy();
-  });
-
-  it("should be true when it is custom element", () => {
-    expect(isCustomElement("custom-")).toBeTruthy();
-  });
-
-  it("should be false when it is div", () => {
-    expect(isCustomElement("div")).toBeFalsy();
-  });
-
-  it("should be false when it is invalid custom element", () => {
-    expect(isCustomElement("-element")).toBeFalsy();
   });
 });

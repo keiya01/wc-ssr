@@ -12,7 +12,6 @@ import {
   ATTRIBUTE_PROPS_NAME,
   html,
   htmlToString,
-  isCustomElement,
   isTemplateResult,
   TemplateResult,
 } from "./html";
@@ -24,6 +23,7 @@ import {
   PropsObject,
 } from "./attribute";
 import { attachTemplate, supportsDeclarativeShadowDOM } from "./polyfill";
+import { isCustomElement } from "./customElementUtils";
 
 type PropertyDeclarationMap = Map<PropertyKey, PropertyDeclaration>;
 type AttributeMap = Map<string, PropertyKey>;

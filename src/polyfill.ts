@@ -1,4 +1,4 @@
-import { isCustomElement } from "./html";
+import { isCustomElement } from "./customElementUtils";
 
 export const supportsDeclarativeShadowDOM = (): boolean => {
   return Object.hasOwnProperty.call(
