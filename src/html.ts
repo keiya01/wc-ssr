@@ -16,6 +16,7 @@ export const html = (
 export const ATTRIBUTE_NAME = "private-wc-ssr";
 export const ATTRIBUTE_EVENT_NAME = `${ATTRIBUTE_NAME}-event`;
 export const ATTRIBUTE_PROPS_NAME = `${ATTRIBUTE_NAME}-props`;
+export const ATTRIBUTE_IS_PARENT = `${ATTRIBUTE_NAME}-is-parent`;
 
 // TODO: escape user data
 export const htmlToString = (
@@ -34,8 +35,10 @@ export const htmlToString = (
     if (isProps(val)) {
       if (options?.isPage) {
         windowProps = val.props;
+        val = `${ATTRIBUTE_IS_PARENT}="true"` + ' ' + `${ATTRIBUTE_PROPS_NAME}="true"`;
+      } else {
+        val = `${ATTRIBUTE_PROPS_NAME}="true"`;
       }
-      val = `${ATTRIBUTE_PROPS_NAME}="true"`;
     }
     if (Array.isArray(val)) {
       val = val.reduce((res, item) => {

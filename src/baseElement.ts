@@ -9,6 +9,7 @@ import {
 } from "./properties";
 import {
   ATTRIBUTE_EVENT_NAME,
+  ATTRIBUTE_IS_PARENT,
   ATTRIBUTE_PROPS_NAME,
   html,
   htmlToString,
@@ -224,6 +225,14 @@ export class BaseElement<
     return attributes;
   }
 
+  _render(): TemplateResult | null {
+    try {
+      return this.render();
+    } catch(error) {
+      return null;
+    }
+  }
+
   requestUpdate(
     name?: PropertyKey,
     oldValue?: unknown,
@@ -273,8 +282,12 @@ export class BaseElement<
     }
   }
 
-  updateProps(): void {
-    const html = this.render();
+  updateProps({ shouldSetProps = true }: { shouldSetProps?: boolean } = {}): void {
+    const html = this._render();
+    if(!html) {
+      return;
+    }
+
     const fragment = parseShadowDOM(htmlToString(html));
     // TODO: support multiple custom element
     const elm = fragment.body.getElementsByTagName(this.tagName)[0];
@@ -304,6 +317,30 @@ export class BaseElement<
     }
 
     const propsList = [] as PropsObject[];
+
+    const processTemplateResult = (val: TemplateResult) => {
+      /**
+       * <custom-elm1>
+       *  <custom-elm2></custom-elm2> <- find this props. This element is included in html.values.
+       * </custom-elm1>
+       */
+       const isCustomElement = val.values.some((innerVal) => {
+        // If props is set, this element is custom element.
+        if (propsElementList.length !== 0 && isProps(innerVal)) {
+          propsList.push(innerVal);
+          return true;
+        }
+        return false;
+      });
+
+
+      // TODO: should check $shadowroot object
+      if(!isCustomElement) {
+        setHTMLValues(val);
+        return;
+      }
+    }
+
     const setHTMLValues = (_html: TemplateResult) =>
       _html.values.map((val) => {
         if (eventElementList.length !== 0 && isEvent(val) && val.handler) {
@@ -311,37 +348,24 @@ export class BaseElement<
           return;
         }
         if (isTemplateResult(val)) {
-          /**
-           * <custom-elm1>
-           *  <custom-elm2></custom-elm2> <- find this props. This element is included in html.values.
-           * </custom-elm1>
-           */
-          if (
-            !val.values.some((innerVal) => {
-              // If props is set, this element is custom element.
-              if (propsElementList.length !== 0 && isProps(innerVal)) {
-                propsList.push(innerVal);
-                return true;
-              }
-              return false;
-            })
-          ) {
-            setHTMLValues(val);
-            return;
-          }
+          processTemplateResult(val);
         }
         if (Array.isArray(val)) {
           val.map((item) => {
             if (isTemplateResult(item)) {
-              setHTMLValues(item);
+              processTemplateResult(item);
             }
           });
           return;
         }
       });
     setHTMLValues(html);
+
     this.setEvent();
-    this.setProps(propsList);
+
+    if(shouldSetProps) {
+      this.setProps(propsList);
+    }
   }
 
   setEvent(): void {
@@ -385,7 +409,12 @@ export class BaseElement<
    * - Improve performance
    */
   update(): void {
-    const fragment = parseShadowDOM(htmlToString(this.render()));
+    const html = this._render();
+    if(!html) {
+      return;
+    }
+
+    const fragment = parseShadowDOM(htmlToString(html));
     const elm = fragment.body.getElementsByTagName(this.tagName)[0];
 
     const fromElementChildren = this.shadowRoot?.children || [];
@@ -410,6 +439,7 @@ export class BaseElement<
      *  - The case where element is added
      *  - The case where element is removed
      */
+
     morphdom(fromElement, toElement, {
       onBeforeElUpdated: (from, to) => {
         if (from.isEqualNode(to) || isCustomElement(from.tagName)) {
@@ -434,17 +464,15 @@ export class BaseElement<
   }
 
   connectedCallback(): void {
-    const pageProps = ((window as unknown) as Record<string, unknown>)
-      .__PAGE_ELEMENT_PROPS__ as Props;
-    if (pageProps) {
-      this.props = pageProps;
-      ((window as unknown) as Record<
-        string,
-        unknown
-      >).__PAGE_ELEMENT_PROPS__ = null;
+    const isParent = this.hasAttribute(ATTRIBUTE_IS_PARENT);
+    if (isParent) {
+      const pageProps = ((window as unknown) as Record<string, unknown>)
+        .__PAGE_ELEMENT_PROPS__ as Props;
+      this.__props = pageProps;
+      this.props = this.__props;
     }
 
-    this.updateProps();
+    this.updateProps({ shouldSetProps: !isParent });
 
     // for server render
     if (Object.keys(this.props).length) {
@@ -464,9 +492,8 @@ export class BaseElement<
     if (name === ATTRIBUTE_PROPS_NAME) {
       this.props = this.__props;
       this.update();
-      this.componentDidMount();
       // for client render
-      this.init();
+      setTimeout(() => this.init(), 0);
       return;
     }
     this._$attributeToProperty(name, value);

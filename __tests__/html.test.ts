@@ -17,7 +17,7 @@ describe("htmlToString()", () => {
     // prettier-ignore
     const template = html`<div><button ${$event("click", () => console.log("Hello World"))}>submit</button></div>`;
     expect(htmlToString(template)).toBe(
-      `<div><button data-${ATTRIBUTE_EVENT_NAME}="true">submit</button></div>`
+      `<div><button ${ATTRIBUTE_EVENT_NAME}="true">submit</button></div>`
     );
   });
 
@@ -25,7 +25,7 @@ describe("htmlToString()", () => {
     // prettier-ignore
     const template = html`<custom-element ${$props({ key: "test", hello: "world" })}><template shadowroot="open"><h1>Hello World</h1></template></custom-element>`;
     expect(htmlToString(template)).toBe(
-      `<custom-element data-${ATTRIBUTE_PROPS_NAME}="true"><template shadowroot="open"><h1>Hello World</h1></template></custom-element>`
+      `<custom-element ${ATTRIBUTE_PROPS_NAME}="true"><template shadowroot="open"><h1>Hello World</h1></template></custom-element>`
     );
   });
 
@@ -35,7 +35,7 @@ describe("htmlToString()", () => {
     // prettier-ignore
     const template = html`<custom-element><template shadowroot="open"><div><h1>Hello World</h1>${templateChild}</div></template></custom-element>`;
 
-    const expectStringTemplateChild = `<custom-element-child data-${ATTRIBUTE_PROPS_NAME}="true"><template shadowroot="open"><h1>Hello Child</h1></template></custom-element-child>`;
+    const expectStringTemplateChild = `<custom-element-child ${ATTRIBUTE_PROPS_NAME}="true"><template shadowroot="open"><h1>Hello Child</h1></template></custom-element-child>`;
     expect(htmlToString(template)).toBe(
       `<custom-element><template shadowroot="open"><div><h1>Hello World</h1>${expectStringTemplateChild}</div></template></custom-element>`
     );
