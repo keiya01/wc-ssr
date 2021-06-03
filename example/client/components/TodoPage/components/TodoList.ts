@@ -1,5 +1,6 @@
-import { html, $event, TemplateResult } from "wc-ssr";
+import { html, TemplateResult } from "wc-ssr";
 import { Todo } from "../template";
+import { template as TodoItem } from "./TodoItem";
 
 type Props = { todos: Todo[]; handleToggleCheck?: (id: number) => () => void };
 
@@ -9,9 +10,7 @@ export const TodoList = ({
 }: Props): TemplateResult => html`
   <ul>
     ${todos.map(
-      (todo) => html` <li ${$event("click", handleToggleCheck?.(todo.id))}>
-        ${todo.text}
-      </li>`
+      (todo) => TodoItem({ todo, handleToggleCheck })
     )}
   </ul>
 `;

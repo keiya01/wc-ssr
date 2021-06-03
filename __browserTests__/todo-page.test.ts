@@ -54,10 +54,10 @@ describe("todo page", () => {
         const checkedTodos = allSelectors[1];
         return [
           Array.from(todos.children).map(
-            (item) => (item as HTMLLIElement).innerText
+            (item) => (item as HTMLLIElement).shadowRoot.querySelector('li').innerText
           ),
           Array.from(checkedTodos.children).map(
-            (item) => (item as HTMLLIElement).innerText
+            (item) => (item as HTMLLIElement).shadowRoot.querySelector('li').innerText
           ),
         ];
       }
@@ -104,10 +104,10 @@ describe("todo page", () => {
         const checkedTodos = allSelectors[1];
         return [
           Array.from(todos.children).map(
-            (item) => (item as HTMLLIElement).innerText
+            (item) => (item as HTMLLIElement).shadowRoot.querySelector('li').innerText
           ),
           Array.from(checkedTodos.children).map(
-            (item) => (item as HTMLLIElement).innerText
+            (item) => (item as HTMLLIElement).shadowRoot.querySelector('li').innerText
           ),
         ];
       });
@@ -121,8 +121,8 @@ describe("todo page", () => {
 
     await page.evaluate(() => {
       const todoPage = document.querySelector("todo-page")?.shadowRoot;
-      const list = Array.from(todoPage?.querySelectorAll("li"));
-      return list[3].click();
+      const list = Array.from(todoPage?.querySelectorAll("todo-item"));
+      return list[3].shadowRoot?.querySelector('li').click();
     });
 
     const testCheckedTodos = async () => {
@@ -142,8 +142,8 @@ describe("todo page", () => {
 
     await page.evaluate(() => {
       const todoPage = document.querySelector("todo-page")?.shadowRoot;
-      const list = Array.from(todoPage?.querySelectorAll("li"));
-      return list[3].click();
+      const list = Array.from(todoPage?.querySelectorAll("todo-item"));
+      return list[3].shadowRoot.querySelector('li').click();
     });
 
     todos[2].isChecked = false;

@@ -21,9 +21,6 @@ const style = html`
     .wrapper {
       display: flex;
     }
-    li {
-      cursor: pointer;
-    }
   </style>
 `;
 
