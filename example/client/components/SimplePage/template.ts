@@ -1,4 +1,4 @@
-import { html } from "wc-ssr";
+import { html, $shadowroot } from "wc-ssr";
 
 type Props = {
   article: string;
@@ -6,7 +6,7 @@ type Props = {
 
 export const template = ({ article }: Props) => html`
   <simple-page>
-    <template shadowroot="open">
+    <template ${$shadowroot()}>
       <article>
         <h2>Article</h2>
         <p>${article}</p>

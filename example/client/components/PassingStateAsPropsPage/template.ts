@@ -1,4 +1,4 @@
-import { html } from "wc-ssr";
+import { html, $shadowroot } from "wc-ssr";
 import { template as AddButton } from "../AddButton";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 
 export const template = ({ title, handleOnClick }: Props = {}) => html`
   <passing-state-as-props-page>
-    <template shadowroot="open">
+    <template ${$shadowroot()}>
       ${AddButton({ title: title || "hey", onClick: handleOnClick })}
     </template>
   </passing-state-as-props-page>

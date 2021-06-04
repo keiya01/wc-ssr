@@ -1,4 +1,4 @@
-import { BaseProps, isEvent, isProps } from "./attribute";
+import { BaseProps, isEvent, isProps, isShadowRoot } from "./attribute";
 import { hasProperties } from "./utils";
 
 export type TemplateResult = {
@@ -39,6 +39,9 @@ export const htmlToString = (
       } else {
         val = `${ATTRIBUTE_PROPS_NAME}="true"`;
       }
+    }
+    if(isShadowRoot(val)) {
+      val = `shadowroot="${val.value}"`
     }
     if (Array.isArray(val)) {
       val = val.reduce((res, item) => {

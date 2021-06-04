@@ -1,4 +1,4 @@
-import { $event, $props, html } from "wc-ssr";
+import { $event, $props, html, $shadowroot } from "wc-ssr";
 import { Todo } from "../../template";
 
 export type Props = {
@@ -8,7 +8,7 @@ export type Props = {
 
 export const template = ({ todo, handleToggleCheck }: Props) => html`
   <todo-item ${$props({todo, handleToggleCheck})}>
-    <template shadowroot="open" shadowrootdelegatesfocus>
+    <template ${$shadowroot()} shadowrootdelegatesfocus>
       <style>
         li {
            cursor: pointer;

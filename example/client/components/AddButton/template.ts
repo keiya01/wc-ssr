@@ -1,4 +1,4 @@
-import { html, $props, $event } from "wc-ssr";
+import { html, $props, $event, $shadowroot } from "wc-ssr";
 
 type Props = {
   title: string;
@@ -7,7 +7,7 @@ type Props = {
 
 export const template = (props: Props) => html`
   <add-button ${$props(props)}>
-    <template shadowroot="open">
+    <template ${$shadowroot()}>
       <button type="button" ${$event("click", props.onClick)}>
         ${props.title}
       </button>

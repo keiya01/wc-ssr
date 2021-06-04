@@ -1,4 +1,4 @@
-import { $event, $props, html, TemplateResult } from "wc-ssr";
+import { $event, $props, html, TemplateResult, $shadowroot } from "wc-ssr";
 import { TodoList } from "./components/TodoList";
 
 export type Todo = { id: number; text: string; isChecked: boolean };
@@ -40,7 +40,7 @@ export const template = ({
   handleToggleCheck,
 }: Props): TemplateResult => html`
   <todo-page ${$props({ todos, checkedTodos, nonCheckedTodos })}>
-    <template shadowroot="open">
+    <template ${$shadowroot()}>
       ${style}
       <div class="container">
         <h1>TODO</h1>

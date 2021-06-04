@@ -1,4 +1,4 @@
-import { $event, $props } from "../src/attribute";
+import { $event, $props, $shadowroot } from "../src/attribute";
 import {
   ATTRIBUTE_EVENT_NAME,
   ATTRIBUTE_PROPS_NAME,
@@ -62,6 +62,14 @@ describe("htmlToString()", () => {
     const template = html`<custom-element><template shadowroot="open"><span>${["abc", "def", null, "ghi"]}</span></template></custom-element>`;
     expect(htmlToString(template)).toBe(
       `<custom-element><template shadowroot="open"><span>abcdefghi</span></template></custom-element>`
+    );
+  });
+
+  it("should be inserted shadowroot", () => {
+    // prettier-ignore
+    const template = html`<custom-element><template ${$shadowroot()}><span>shadowroot</span></template></custom-element>`;
+    expect(htmlToString(template)).toBe(
+      `<custom-element><template shadowroot="open"><span>shadowroot</span></template></custom-element>`
     );
   });
 });

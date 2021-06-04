@@ -1,7 +1,9 @@
+import { TemplateResult } from "./html";
 import { hasProperties } from "./utils";
 
 export const ATTRIBUTE_EVENT = 1;
 export const ATTRIBUTE_PROPS = 2;
+export const ATTRIBUTE_SHADOW_ROOT = 3;
 
 // TODO: fix unknown type
 export type EventHandler<E extends Event> = (ev?: E) => void;
@@ -20,7 +22,31 @@ export type PropsObject = {
   props: BaseProps;
 };
 
-export type AttributeResult<E extends Event> = EventObject<E> | PropsObject;
+export type ShadowRootAttributeObject = {
+  type: typeof ATTRIBUTE_SHADOW_ROOT;
+  value: ShadowRootMode;
+};
+
+export type AttributeResult<E extends Event> = ShadowRootAttributeObject | EventObject<E> | PropsObject;
+
+export const isShadowRoot = (
+  value: unknown
+): value is ShadowRootAttributeObject =>
+  hasProperties<ShadowRootAttributeObject>(
+    value,
+    ['type', 'value']
+  ) &&
+  value.type === ATTRIBUTE_SHADOW_ROOT &&
+  !!value.value;
+
+export const $shadowroot = <E extends Event>(
+  value?: ShadowRootMode,
+): AttributeResult<E> => ({
+  type: ATTRIBUTE_SHADOW_ROOT,
+  value: value ?? 'open',
+});
+
+export const hasShadowRoot = (result: TemplateResult): boolean => !!result.values.find((val) => isShadowRoot(val));
 
 export const isEvent = <E extends Event>(
   value: unknown

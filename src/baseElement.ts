@@ -19,6 +19,7 @@ import {
 import {
   BaseProps,
   EventObject,
+  hasShadowRoot,
   isEvent,
   isProps,
   PropsObject,
@@ -324,7 +325,7 @@ export class BaseElement<
        *  <custom-elm2></custom-elm2> <- find this props. This element is included in html.values.
        * </custom-elm1>
        */
-       const isCustomElement = val.values.some((innerVal) => {
+       val.values.some((innerVal) => {
         // If props is set, this element is custom element.
         if (propsElementList.length !== 0 && isProps(innerVal)) {
           propsList.push(innerVal);
@@ -334,8 +335,7 @@ export class BaseElement<
       });
 
 
-      // TODO: should check $shadowroot object
-      if(!isCustomElement) {
+      if(!hasShadowRoot(val)) {
         setHTMLValues(val);
         return;
       }
