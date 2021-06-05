@@ -22,7 +22,7 @@ yarn add wc-ssr
 ```ts
 // client/AddButton/template.ts
 
-import { html, $props, $event } from "wc-ssr";
+import { html, $props, $event, $shadowroot } from "wc-ssr";
 
 type Props = {
   title: string;
@@ -32,7 +32,8 @@ type Props = {
 export const template = (props: Props) => html`
   ${/* You can pass props with `$props()`. */}
   <add-button ${$props(props)}>
-    <template shadowroot="open">
+    ${/* You must set shadowroot attribute to use ShadowDOM */}
+    <template ${$shadowroot('open')}>
       ${/* You can add event with `$event()`. */}
       <button type="button" ${$event("click", props.onClick)}>
         ${props.title}
@@ -138,6 +139,7 @@ See detail in [example](https://github.com/keiya01/wc-ssr/tree/master/example).
 
 ## Usage
 
+- [ShadowDOM](#ShadowDOM)
 - [Styling](#Styling)
 - [Props](#Props)
 - [Event](#Event)
@@ -147,13 +149,32 @@ See detail in [example](https://github.com/keiya01/wc-ssr/tree/master/example).
 - [Hydration](#Hydration)
 - [Server Side Rendering](#Server-Side-Rendering)
 
+### ShadowDOM
+
+You must use `$shadowroot` method to tell custom element use ShadowDOM.  
+
+`$shadowroot` method can take `open` or `closed`.  
+This is optional. Default value is `open`.
+
+```ts
+import { html, $shadowroot } from 'wc-ssr';
+
+export const template = html`
+  <custom-element>
+    <template ${$shadowroot('open')}>
+      <span>Hello World</span>
+    </template>
+  </custom-element>
+`;
+```
+
 ### Styling
 
 You can use css with style tag.  
 You can set style tag inside template tag.
 
 ```ts
-import { html } from "wc-ssr";
+import { html, $shadowroot } from "wc-ssr";
 
 const style = html`
   <style>
@@ -165,7 +186,7 @@ const style = html`
 
 const CustomButton = html`
   <custom-button>
-    <template>
+    <template ${$shadowroot()}>
       ${style}
       <button type="button">button</button>
     </template>
@@ -178,12 +199,12 @@ const CustomButton = html`
 You can pass props to component. And you can get props to be injected from BaseElement class.
 
 ```ts
-import { html } from "wc-ssr";
+import { html, $shadowroot } from "wc-ssr";
 import { BaseElement } from "wc-ssr/client";
 
 const CustomElement = html`
   <custom-element>
-    <template>
+    <template ${$shadowroot()}>
       <h1>Hello World</h1>
       ${
         PassProps({
@@ -200,7 +221,7 @@ class CustomElement extends BaseElement {
 
 const PassProps = ({ text }) => html`
   <pass-props ${$props({ text }) /* Pass props to pass-props element */}>
-    <template>
+    <template ${$shadowroot()}>
       <p>${text}</p>
     </template>
   </pass-props>
@@ -222,9 +243,12 @@ class PassProps extends BaseElement {
 You can add event to element by using `$event` method.
 
 ```ts
+import { html, $shadowroot, $event } from 'wc-ssr';
+import { BaseElement } from 'wc-ssr/client';
+
 const EventElement = ({ handleOnClick }) => html`
   <event-element>
-    <template>
+    <template ${$shadowroot()}>
       <button type="button" ${$event("click", handleOnClick)}>click me</button>
     </template>
   </event-element>
@@ -250,7 +274,7 @@ class EventElementClass extends BaseElement {
 You can define state like React. If you defined state and change it, `render()` is executed.
 
 ```ts
-import { html } from "wc-ssr";
+import { html, $shadowroot, $event } from "wc-ssr";
 import { BaseElement } from "wc-ssr/client";
 
 type Props = {
@@ -262,7 +286,7 @@ type Props = {
 
 const DefineState = ({ items, text, handleOnChangeText, addItem }) => html`
   <define-state>
-    <template>
+    <template ${$shadowroot()}>
       <ul>
         ${items.map((item) => html`<li>${item}</li>`)}
       </ul>
@@ -342,7 +366,7 @@ Hydration is performed automatically by browser.
 You can use `htmlToString` to render html on the server.
 
 ```ts
-import { htmlToString, html } from "wc-ssr";
+import { htmlToString, html, $shadowroot } from "wc-ssr";
 
 type Props = {
   text: string;
@@ -350,7 +374,7 @@ type Props = {
 
 const render = ({ text }: Props) => html`
   <custom-element>
-    <template>
+    <template ${$shadowroot()}>
       <h1>${text}</h1>
     </template>
   </custom-element>
