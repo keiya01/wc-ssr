@@ -43,7 +43,7 @@ export const $shadowroot = <E extends Event>(
   value?: ShadowRootMode,
 ): AttributeResult<E> => ({
   type: ATTRIBUTE_SHADOW_ROOT,
-  value: value ?? 'open',
+  value: value || 'open',
 });
 
 export const hasShadowRoot = (result: TemplateResult): boolean => !!result.values.find((val) => isShadowRoot(val));
