@@ -1,6 +1,6 @@
 {
   "name": "wc-ssr",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "SSR with web components",
   "repository": "git@github.com:keiya01/wc-ssr.git",
   "author": "keiya01 <keiya.s.0210@gmail.com>",
