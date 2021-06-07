@@ -1,0 +1,22 @@
+name: Build / Test
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install
+        run: PUPPETEER_PRODUCT=firefox yarn install
+
+      - name: lint
+        run: yarn lint
+
+      - name: build
+        run: yarn build
+
+      - name: unit test
+        run: yarn test:unit
