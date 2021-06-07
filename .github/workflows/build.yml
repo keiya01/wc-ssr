@@ -22,6 +22,7 @@ jobs:
         working-directory: .
         run: |
           yarn build
+          yarn link
           yarn link wc-ssr
 
       - name: unit test
