@@ -19,6 +19,7 @@ jobs:
         run: yarn lint
 
       - name: build
+        working-directory: .
         run: |
           yarn build
           yarn link wc-ssr
