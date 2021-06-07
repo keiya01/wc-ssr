@@ -22,23 +22,7 @@ jobs:
         working-directory: .
         run: |
           yarn build
-          yarn link
-          yarn link wc-ssr
 
       - name: unit test
         working-directory: ./__tests__
         run: yarn test:unit
-
-      - name: unit test
-        working-directory: ./__tests__
-        run: yarn test:unit
-
-      - name: run example for browser test
-        working-directory: ./example
-        run: |
-          yarn install
-          yarn start
-
-      - name: browser test
-        working-directory: ./__browserTests__
-        run: yarn test:browser
