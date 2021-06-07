@@ -46,7 +46,7 @@
     "fix": "run-s fix:*",
     "fix:prettier": "prettier -w .",
     "fix:eslint": "yarn lint:eslint --fix",
-    "prepublish": "run-s fix type build",
+    "prepublishOnly": "run-s fix type build",
     "test": "run-p test:unit test:browser",
     "test:unit": "jest __tests__",
     "test:browser": "run-p test:browser:firefox test:browser:chrome",
