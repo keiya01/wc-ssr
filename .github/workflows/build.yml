@@ -1,0 +1,28 @@
+name: Build / Test
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install
+        run: |
+          yarn install
+          node node_modules/puppeteer/install.js
+          PUPPETEER_PRODUCT=firefox node node_modules/puppeteer/install.js
+
+      - name: lint
+        run: yarn lint
+
+      - name: build
+        working-directory: .
+        run: |
+          yarn build
+
+      - name: unit test
+        working-directory: ./__tests__
+        run: yarn test:unit

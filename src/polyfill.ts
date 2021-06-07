@@ -18,18 +18,18 @@ const recursivelyAppendTemplate = (elm: Element) => {
   const template = elm.querySelector<HTMLTemplateElement>(
     "template[shadowRoot]"
   );
-  if(!template) {
+  if (!template) {
     throw createTemplateError();
   }
 
   elm.appendChild(template.content);
   template.remove();
   Array.from(elm.children).map((child) => {
-    if(isCustomElement(child.tagName)) {
+    if (isCustomElement(child.tagName)) {
       recursivelyAppendTemplate(child);
     }
   });
-}
+};
 
 export const attachTemplate = (
   elm: Element,

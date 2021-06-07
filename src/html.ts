@@ -35,13 +35,16 @@ export const htmlToString = (
     if (isProps(val)) {
       if (options?.isPage) {
         windowProps = val.props;
-        val = `${ATTRIBUTE_IS_PARENT}="true"` + ' ' + `${ATTRIBUTE_PROPS_NAME}="true"`;
+        val =
+          `${ATTRIBUTE_IS_PARENT}="true"` +
+          " " +
+          `${ATTRIBUTE_PROPS_NAME}="true"`;
       } else {
         val = `${ATTRIBUTE_PROPS_NAME}="true"`;
       }
     }
-    if(isShadowRoot(val)) {
-      val = `shadowroot="${val.value}"`
+    if (isShadowRoot(val)) {
+      val = `shadowroot="${val.value}"`;
     }
     if (Array.isArray(val)) {
       val = val.reduce((res, item) => {
