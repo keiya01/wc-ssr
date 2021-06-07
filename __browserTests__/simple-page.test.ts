@@ -2,7 +2,7 @@ import { IS_FIREFOX, waitForShadowRoot } from "./browserUtils";
 
 describe("simple page", () => {
   it("should render simple-page element", async () => {
-    if(IS_FIREFOX) {
+    if (IS_FIREFOX) {
       return;
     }
 
@@ -31,7 +31,7 @@ describe("simple page", () => {
     const page = await browser.newPage();
     await page.goto("http://localhost:3000/simple");
 
-    if(IS_FIREFOX) {
+    if (IS_FIREFOX) {
       await waitForShadowRoot(page, "simple-page");
     }
 

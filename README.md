@@ -151,17 +151,17 @@ See detail in [example](https://github.com/keiya01/wc-ssr/tree/master/example).
 
 ### ShadowDOM
 
-You must use `$shadowroot` method to tell custom element use ShadowDOM.  
+You must use `$shadowroot` method to tell custom element use ShadowDOM.
 
 `$shadowroot` method can take `open` or `closed`.  
 This is optional. Default value is `open`.
 
 ```ts
-import { html, $shadowroot } from 'wc-ssr';
+import { html, $shadowroot } from "wc-ssr";
 
 export const template = html`
   <custom-element>
-    <template ${$shadowroot('open')}>
+    <template ${$shadowroot("open")}>
       <span>Hello World</span>
     </template>
   </custom-element>
@@ -243,8 +243,8 @@ class PassProps extends BaseElement {
 You can add event to element by using `$event` method.
 
 ```ts
-import { html, $shadowroot, $event } from 'wc-ssr';
-import { BaseElement } from 'wc-ssr/client';
+import { html, $shadowroot, $event } from "wc-ssr";
+import { BaseElement } from "wc-ssr/client";
 
 const EventElement = ({ handleOnClick }) => html`
   <event-element>

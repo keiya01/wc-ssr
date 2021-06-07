@@ -229,7 +229,7 @@ export class BaseElement<
   _render(): TemplateResult | null {
     try {
       return this.render();
-    } catch(error) {
+    } catch (error) {
       return null;
     }
   }
@@ -283,9 +283,11 @@ export class BaseElement<
     }
   }
 
-  updateProps({ shouldSetProps = true }: { shouldSetProps?: boolean } = {}): void {
+  updateProps({
+    shouldSetProps = true,
+  }: { shouldSetProps?: boolean } = {}): void {
     const html = this._render();
-    if(!html) {
+    if (!html) {
       return;
     }
 
@@ -300,19 +302,19 @@ export class BaseElement<
       return;
     }
 
-    const eventElementList = Array.from(target.querySelectorAll(
-      `[${ATTRIBUTE_EVENT_NAME}]`
-    ));
-    const propsElementList = Array.from(target.querySelectorAll(
-      `[${ATTRIBUTE_PROPS_NAME}]`
-    ));
+    const eventElementList = Array.from(
+      target.querySelectorAll(`[${ATTRIBUTE_EVENT_NAME}]`)
+    );
+    const propsElementList = Array.from(
+      target.querySelectorAll(`[${ATTRIBUTE_PROPS_NAME}]`)
+    );
 
     // for polyfill
-    if(!isSupportedDeclarativeShadowDOM && !(target instanceof ShadowRoot)) {
-      if(target.hasAttribute(ATTRIBUTE_EVENT_NAME)) {
+    if (!isSupportedDeclarativeShadowDOM && !(target instanceof ShadowRoot)) {
+      if (target.hasAttribute(ATTRIBUTE_EVENT_NAME)) {
         eventElementList.push(target);
       }
-      if(target.hasAttribute(ATTRIBUTE_PROPS_NAME)) {
+      if (target.hasAttribute(ATTRIBUTE_PROPS_NAME)) {
         propsElementList.push(target);
       }
     }
@@ -325,7 +327,7 @@ export class BaseElement<
        *  <custom-elm2></custom-elm2> <- find this props. This element is included in html.values.
        * </custom-elm1>
        */
-       val.values.some((innerVal) => {
+      val.values.some((innerVal) => {
         // If props is set, this element is custom element.
         if (propsElementList.length !== 0 && isProps(innerVal)) {
           propsList.push(innerVal);
@@ -334,12 +336,11 @@ export class BaseElement<
         return false;
       });
 
-
-      if(!hasShadowRoot(val)) {
+      if (!hasShadowRoot(val)) {
         setHTMLValues(val);
         return;
       }
-    }
+    };
 
     const setHTMLValues = (_html: TemplateResult) =>
       _html.values.map((val) => {
@@ -363,7 +364,7 @@ export class BaseElement<
 
     this.setEvent();
 
-    if(shouldSetProps) {
+    if (shouldSetProps) {
       this.setProps(propsList);
     }
   }
@@ -410,7 +411,7 @@ export class BaseElement<
    */
   update(): void {
     const html = this._render();
-    if(!html) {
+    if (!html) {
       return;
     }
 

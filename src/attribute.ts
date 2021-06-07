@@ -27,26 +27,27 @@ export type ShadowRootAttributeObject = {
   value: ShadowRootMode;
 };
 
-export type AttributeResult<E extends Event> = ShadowRootAttributeObject | EventObject<E> | PropsObject;
+export type AttributeResult<E extends Event> =
+  | ShadowRootAttributeObject
+  | EventObject<E>
+  | PropsObject;
 
 export const isShadowRoot = (
   value: unknown
 ): value is ShadowRootAttributeObject =>
-  hasProperties<ShadowRootAttributeObject>(
-    value,
-    ['type', 'value']
-  ) &&
+  hasProperties<ShadowRootAttributeObject>(value, ["type", "value"]) &&
   value.type === ATTRIBUTE_SHADOW_ROOT &&
   !!value.value;
 
 export const $shadowroot = <E extends Event>(
-  value?: ShadowRootMode,
+  value?: ShadowRootMode
 ): AttributeResult<E> => ({
   type: ATTRIBUTE_SHADOW_ROOT,
-  value: value || 'open',
+  value: value || "open",
 });
 
-export const hasShadowRoot = (result: TemplateResult): boolean => !!result.values.find((val) => isShadowRoot(val));
+export const hasShadowRoot = (result: TemplateResult): boolean =>
+  !!result.values.find((val) => isShadowRoot(val));
 
 export const isEvent = <E extends Event>(
   value: unknown

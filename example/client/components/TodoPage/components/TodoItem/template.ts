@@ -7,16 +7,14 @@ export type Props = {
 };
 
 export const template = ({ todo, handleToggleCheck }: Props) => html`
-  <todo-item ${$props({todo, handleToggleCheck})}>
+  <todo-item ${$props({ todo, handleToggleCheck })}>
     <template ${$shadowroot()} shadowrootdelegatesfocus>
       <style>
         li {
-           cursor: pointer;
+          cursor: pointer;
         }
       </style>
-      <li ${$event("click", handleToggleCheck?.(todo.id))}>
-        ${todo.text}
-      </li>
+      <li ${$event("click", handleToggleCheck?.(todo.id))}>${todo.text}</li>
     </template>
-</todo-item>
+  </todo-item>
 `;

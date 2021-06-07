@@ -22,8 +22,8 @@ describe("passing state as props page", () => {
           ?.click();
       });
 
-    if(IS_FIREFOX) {
-      await waitForShadowRoot(page, 'passing-state-as-props-page');
+    if (IS_FIREFOX) {
+      await waitForShadowRoot(page, "passing-state-as-props-page");
     }
 
     expect(await getButtonTextContent()).toBe("hey");

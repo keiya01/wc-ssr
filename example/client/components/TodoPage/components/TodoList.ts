@@ -9,8 +9,6 @@ export const TodoList = ({
   handleToggleCheck,
 }: Props): TemplateResult => html`
   <ul>
-    ${todos.map(
-      (todo) => TodoItem({ todo, handleToggleCheck })
-    )}
+    ${todos.map((todo) => TodoItem({ todo, handleToggleCheck }))}
   </ul>
 `;
