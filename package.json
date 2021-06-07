@@ -42,7 +42,7 @@
     "type": "tsc --noEmit",
     "lint:prettier": "prettier --check .",
     "lint:eslint": "eslint --ext .ts src",
-    "lint": "run-p lint:*",
+    "lint": "run-s lint:*",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier -w .",
     "fix:eslint": "yarn lint:eslint --fix",
