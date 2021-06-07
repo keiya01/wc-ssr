@@ -10,7 +10,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: install
-        run: PUPPETEER_PRODUCT=firefox yarn install
+        run: |
+          yarn install
+          node node_modules/puppeteer/install.js
+          PUPPETEER_PRODUCT=firefox node node_modules/puppeteer/install.js
 
       - name: lint
         run: yarn lint
