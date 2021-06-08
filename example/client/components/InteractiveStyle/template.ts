@@ -1,6 +1,7 @@
 import { html, $props, $event, $shadowroot } from "wc-ssr";
 
 const style = html`
+  <link rel="stylesheet" href="public/example.css" />
   <style>
     :host {
       position: relative;
@@ -36,7 +37,7 @@ export const template = (props: Props) => {
     <interactive-style ${$props(props)}>
       <template ${$shadowroot()}>
         ${style}
-        <div>
+        <div class="example-blue">
           <button type="button" ${$event("click", props.handleActivateDialog)}>
             open menu
           </button>
