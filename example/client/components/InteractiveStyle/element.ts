@@ -3,14 +3,14 @@ import { template, Props } from "./template";
 
 type State = {
   isOpenDialog: boolean;
-}
+};
 
 export class InteractiveStyle extends BaseElement<Props, State> {
   state: State = { isOpenDialog: false };
 
   handleActivateDialog = () => {
-    this.setState({isOpenDialog: !this.state.isOpenDialog });
-  }
+    this.setState({ isOpenDialog: !this.state.isOpenDialog });
+  };
 
   render() {
     return template({

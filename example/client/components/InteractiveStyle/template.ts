@@ -28,9 +28,9 @@ export type Props = {
 };
 
 export const template = (props: Props) => {
-  console.trace('render', props);
-
-  const dialogStateClassName = props.isOpenDialog ? "open-dialog" : "close-dialog";
+  const dialogStateClassName = props.isOpenDialog
+    ? "open-dialog"
+    : "close-dialog";
 
   return html`
     <interactive-style ${$props(props)}>

@@ -6,8 +6,8 @@ type RenderOptions = {
 
 const render = async (load: () => Promise<any>, options: RenderOptions) => {
   const { getServerSideProps } = await load();
-  if(options.ctx.isInitial) {
-    return '';
+  if (options.ctx.isInitial) {
+    return "";
   }
   return await getServerSideProps();
 };
@@ -32,7 +32,8 @@ export const routes: Routes = [
     children: [
       {
         path: "/",
-        action: (ctx) => render(() => import("../client/pages/todo/index"), { ctx }),
+        action: (ctx) =>
+          render(() => import("../client/pages/todo/index"), { ctx }),
       },
     ],
   },
