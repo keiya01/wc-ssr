@@ -194,6 +194,20 @@ const CustomButton = html`
 `;
 ```
 
+You can also set multiple styles as the following.
+
+```ts
+const style = html`
+  <link rel="stylesheet" href="example1.css" />
+  <link rel="stylesheet" href="example2.css" />
+  <style>
+    div {
+      background-color: blue;
+    }
+  </style>
+`;
+```
+
 ### Props
 
 You can pass props to component. And you can get props to be injected from BaseElement class.

@@ -413,25 +413,26 @@ export class BaseElement<
     const fromElementChildren = this.shadowRoot?.children || [];
     const toElementChildren = this.getTargetElement(elm);
 
-    if (fromElementChildren.length > 2 || toElementChildren.length > 2) {
-      throw new Error("Component can only take one root node.");
-    }
-
     if (fromElementChildren.length === 0 || toElementChildren.length === 0) {
       throw new Error("ShadowRoot could not found.");
     }
 
+    /**
+     * Other element should be style element or link element.
+     * example:
+     *  <custom-elm>
+     *    <template ${$shadowroot()}>
+     *      <link rel="XXX" href="XXX">
+     *      <style>XXX</style>
+     *      <div>Main contents is here.</div> <-- We want to get this element as fromElement or toElement.
+     *    </template>
+     *  </custom-elm>
+     */
     const fromElement = fromElementChildren[fromElementChildren.length - 1];
     const toElement = toElementChildren[toElementChildren.length - 1];
 
     // Reset event before DOM is updated.
     this.resetEvents();
-
-    /**
-     * TODO
-     *  - The case where element is added
-     *  - The case where element is removed
-     */
 
     morphdom(fromElement, toElement, {
       onBeforeElUpdated: (from, to) => {
