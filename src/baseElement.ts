@@ -227,11 +227,7 @@ export class BaseElement<
   }
 
   _render(): TemplateResult | null {
-    try {
-      return this.render();
-    } catch (error) {
-      return null;
-    }
+    return this.render();
   }
 
   requestUpdate(
@@ -283,14 +279,10 @@ export class BaseElement<
     }
   }
 
-  updateProps({
-    shouldSetProps = true,
-  }: { shouldSetProps?: boolean } = {}): void {
-    const html = this._render();
-    if (!html) {
-      return;
-    }
-
+  updateProps(
+    html: TemplateResult,
+    { shouldSetProps = true }: { shouldSetProps?: boolean } = {}
+  ): void {
     const fragment = parseShadowDOM(htmlToString(html));
     // TODO: support multiple custom element
     const elm = fragment.body.getElementsByTagName(this.tagName)[0];
@@ -453,7 +445,7 @@ export class BaseElement<
 
     // After state is updated, update event.
     // Because event is not registered correct even if update event before DOM is updated.
-    this.updateProps();
+    this.updateProps(html);
   }
 
   init(): void {
@@ -473,7 +465,15 @@ export class BaseElement<
       this.props = this.__props;
     }
 
-    this.updateProps({ shouldSetProps: !isParent });
+    const hasProps = this.hasAttribute(ATTRIBUTE_PROPS_NAME);
+
+    if (isParent || !hasProps) {
+      const html = this._render();
+      if (!html) {
+        return;
+      }
+      this.updateProps(html, { shouldSetProps: !isParent });
+    }
 
     // for server render
     if (Object.keys(this.props).length) {
@@ -490,7 +490,10 @@ export class BaseElement<
     _old: string | null,
     value: string | null
   ): void {
-    if (name === ATTRIBUTE_PROPS_NAME) {
+    if (
+      name === ATTRIBUTE_PROPS_NAME &&
+      Object.keys(this.__props).length !== 0
+    ) {
       this.props = this.__props;
       this.update();
       // for client render
