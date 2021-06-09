@@ -93,7 +93,6 @@ const parseShadowDOM = (html: string) => {
 
 export type BaseState = Record<PropertyKey, unknown>;
 
-// TODO: support <slot> SSR.
 // TODO: support computed state that is invoked when this.state is updated.
 export class BaseElement<
   Props extends BaseProps = BaseProps,
@@ -284,7 +283,6 @@ export class BaseElement<
     { shouldSetProps = true }: { shouldSetProps?: boolean } = {}
   ): void {
     const fragment = parseShadowDOM(htmlToString(html));
-    // TODO: support multiple custom element
     const elm = fragment.body.getElementsByTagName(this.tagName)[0];
     const isSupportedDeclarativeShadowDOM = supportsDeclarativeShadowDOM();
     const target = isSupportedDeclarativeShadowDOM
