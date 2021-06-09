@@ -64,7 +64,7 @@ export const htmlToString = (
             res += htmlToString(item);
             return res;
           }
-          return res + item;
+          return res + escapeHTML(String(item));
         }, "")
       );
     }
