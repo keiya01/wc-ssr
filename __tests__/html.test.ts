@@ -142,4 +142,22 @@ describe("htmlToString()", () => {
       )}><span>Hello World</span></template></custom-element>`
     );
   });
+
+  it("should be escaped html with array", () => {
+    const xss = [
+      {
+        $$typeof: "template-result",
+        strings: ['<script>alert("XSS")</script>'],
+        values: [],
+      },
+      `<script>alert('XSS')</script>`,
+    ];
+    // prettier-ignore
+    const template = html`<custom-element><template ${$shadowroot()}><span>${xss}</span></template></custom-element>`;
+    expect(htmlToString(template)).toBe(
+      `<custom-element><template shadowroot="open"><span>${escapeHTML(
+        String(xss[0])
+      )}${escapeHTML(String(xss[1]))}</span></template></custom-element>`
+    );
+  });
 });
