@@ -1,15 +1,15 @@
 import { TemplateResult } from "./html";
+import {
+  ATTRIBUTE_EVENT_TYPE,
+  ATTRIBUTE_PROPS_TYPE,
+  ATTRIBUTE_SHADOW_ROOT_TYPE,
+} from "./symbols";
 import { hasProperties } from "./utils";
 
-export const ATTRIBUTE_EVENT = 1;
-export const ATTRIBUTE_PROPS = 2;
-export const ATTRIBUTE_SHADOW_ROOT = 3;
-
-// TODO: fix unknown type
 export type EventHandler<E extends Event> = (ev?: E) => void;
 
 export type EventObject<E extends Event> = {
-  type: typeof ATTRIBUTE_EVENT;
+  $$typeof: symbol;
   eventName: string;
   handler?: EventHandler<E>;
 };
@@ -18,12 +18,12 @@ export type EventObject<E extends Event> = {
 export type BaseProps = Record<string, any>;
 
 export type PropsObject = {
-  type: typeof ATTRIBUTE_PROPS;
+  $$typeof: symbol;
   props: BaseProps;
 };
 
 export type ShadowRootAttributeObject = {
-  type: typeof ATTRIBUTE_SHADOW_ROOT;
+  $$typeof: symbol;
   value: ShadowRootMode;
 };
 
@@ -35,14 +35,14 @@ export type AttributeResult<E extends Event> =
 export const isShadowRoot = (
   value: unknown
 ): value is ShadowRootAttributeObject =>
-  hasProperties<ShadowRootAttributeObject>(value, ["type", "value"]) &&
-  value.type === ATTRIBUTE_SHADOW_ROOT &&
+  hasProperties<ShadowRootAttributeObject>(value, ["$$typeof", "value"]) &&
+  value.$$typeof === ATTRIBUTE_SHADOW_ROOT_TYPE &&
   !!value.value;
 
 export const $shadowroot = <E extends Event>(
   value?: ShadowRootMode
 ): AttributeResult<E> => ({
-  type: ATTRIBUTE_SHADOW_ROOT,
+  $$typeof: ATTRIBUTE_SHADOW_ROOT_TYPE,
   value: value || "open",
 });
 
@@ -52,27 +52,27 @@ export const hasShadowRoot = (result: TemplateResult): boolean =>
 export const isEvent = <E extends Event>(
   value: unknown
 ): value is EventObject<E> =>
-  hasProperties<EventObject<E>>(value, ["type", "eventName", "handler"]) &&
-  value.type === ATTRIBUTE_EVENT &&
+  hasProperties<EventObject<E>>(value, ["$$typeof", "eventName", "handler"]) &&
+  value.$$typeof === ATTRIBUTE_EVENT_TYPE &&
   !!value.eventName;
 
 export const $event = <E extends Event>(
   eventName: string,
   handler?: EventHandler<E>
 ): AttributeResult<E> => ({
-  type: ATTRIBUTE_EVENT,
+  $$typeof: ATTRIBUTE_EVENT_TYPE,
   eventName,
   handler,
 });
 
 export const isProps = (value: unknown): value is PropsObject =>
-  hasProperties<PropsObject>(value, ["type", "props"]) &&
-  value.type === ATTRIBUTE_PROPS &&
+  hasProperties<PropsObject>(value, ["$$typeof", "props"]) &&
+  value.$$typeof === ATTRIBUTE_PROPS_TYPE &&
   !!value.props;
 
 export const $props = <Props extends BaseProps, E extends Event>(
   props: Props
 ): AttributeResult<E> => ({
-  type: ATTRIBUTE_PROPS,
+  $$typeof: ATTRIBUTE_PROPS_TYPE,
   props,
 });

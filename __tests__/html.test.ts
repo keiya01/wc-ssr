@@ -5,6 +5,7 @@ import {
   html,
   htmlToString,
 } from "../src/html";
+import { escapeHTML } from "../src/escapeHTML";
 
 describe("htmlToString()", () => {
   it("should convert TemplateResult to html string", () => {
@@ -70,6 +71,75 @@ describe("htmlToString()", () => {
     const template = html`<custom-element><template ${$shadowroot()}><span>shadowroot</span></template></custom-element>`;
     expect(htmlToString(template)).toBe(
       `<custom-element><template shadowroot="open"><span>shadowroot</span></template></custom-element>`
+    );
+  });
+
+  it("should be escaped html", () => {
+    const xss = `<script>alert('XSS')</script>`;
+    // prettier-ignore
+    const template = html`<custom-element><template ${$shadowroot()}><span>${xss}</span></template></custom-element>`;
+    expect(htmlToString(template)).toBe(
+      `<custom-element><template shadowroot="open"><span>${escapeHTML(
+        xss
+      )}</span></template></custom-element>`
+    );
+  });
+
+  it("should be escaped TemplateResult", () => {
+    const xss = {
+      $$typeof: "template-result",
+      strings: ['<script>alert("XSS")</script>'],
+      values: [],
+    };
+    // prettier-ignore
+    const template = html`<custom-element><template ${$shadowroot()}><span>${xss}</span></template></custom-element>`;
+    expect(htmlToString(template)).toBe(
+      `<custom-element><template shadowroot="open"><span>${escapeHTML(
+        String(xss)
+      )}</span></template></custom-element>`
+    );
+  });
+
+  it("should be escaped event", () => {
+    const xss = {
+      $$typeof: "event",
+      eventName: "click",
+      handler: () => console.log("XSS"),
+    };
+    // prettier-ignore
+    const template = html`<custom-element><template ${$shadowroot()}><button ${xss}>click me</button></template></custom-element>`;
+    expect(htmlToString(template)).toBe(
+      `<custom-element><template shadowroot="open"><button ${escapeHTML(
+        String(xss)
+      )}>click me</button></template></custom-element>`
+    );
+  });
+
+  it("should be escaped props", () => {
+    const xss = {
+      $$typeof: "props",
+      props: { xss: "XSS" },
+    };
+    // prettier-ignore
+    const template = html`<custom-element ${xss}><template ${$shadowroot()}><span>Hello World</span></template></custom-element>`;
+    expect(htmlToString(template)).toBe(
+      `<custom-element ${escapeHTML(
+        String(xss)
+      )}><template shadowroot="open"><span>Hello World</span></template></custom-element>`
+    );
+  });
+
+  it("should be escaped shadowroot", () => {
+    const xss = {
+      $$typeof: "shadowroot",
+      value: `close" onclick="alert('CSS')`,
+    };
+    // prettier-ignore
+    const template = html`<custom-element><template ${xss}><span>Hello World</span></template></custom-element>`;
+    expect(htmlToString(template)).toBe(
+      `<custom-element><template ${escapeHTML(
+        String(xss)
+      )}><span>Hello World</span></template></custom-element>`
     );
   });
 });
