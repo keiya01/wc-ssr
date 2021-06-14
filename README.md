@@ -5,6 +5,10 @@
 `wc-ssr` is a simple Server Side Rendering Library with `Web Components`.  
 This lib is worked by [Declarative Shadow DOM](https://web.dev/declarative-shadow-dom/). Therefore this lib works to use Server Side Rendering on a supported browser but works to use Client Side Rendering on a not supported browser.
 
+## SSR with Web Components
+
+This lib work as SSR in the browser that support [Declarative Shadow DOM](https://web.dev/declarative-shadow-dom/). But this lib perform as Client Side Rendering in not supported browsers.
+
 ## Installation
 
 ```sh
