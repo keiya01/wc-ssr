@@ -21,7 +21,7 @@ export const ATTRIBUTE_EVENT_NAME = `${ATTRIBUTE_NAME}-event`;
 export const ATTRIBUTE_PROPS_NAME = `${ATTRIBUTE_NAME}-props`;
 export const ATTRIBUTE_IS_PARENT = `${ATTRIBUTE_NAME}-is-parent`;
 
-// TODO: escape user data
+// TODO: compress html
 export const htmlToString = (
   result: TemplateResult,
   options?: { isPage?: boolean }
