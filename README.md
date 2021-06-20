@@ -400,3 +400,7 @@ const render = ({ text }: Props) => html`
 
 htmlToString(render({ text: "Hello World" }));
 ```
+
+## License
+
+[MIT](https://github.com/keiya01/wc-ssr/blob/master/LICENSE)
